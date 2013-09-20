@@ -41,7 +41,7 @@ app.factory('searchService', function ($http) {
     var service = {};
 
     service.search = function (quarter, query) {
-        return $http.get('/' + quarter + '/section/' + query);
+        return $http.get('/' + quarter + '/search/' + query);
     }
 
     return service;

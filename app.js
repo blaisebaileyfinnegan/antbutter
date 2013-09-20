@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+require('./environment');
 var express = require('express');
 var app = express();
 
@@ -12,12 +13,20 @@ app.set('views', __dirname + '/views');
 
 // Set up database
 var mysql = require('mysql');
-var cfg = require('./cfg/db');
-var db = mysql.createConnection(cfg);
+
+var cfg = require('./cfg/dev_db');
+app.set('port', 3000);
+
+app.configure('production', function () {
+    cfg = require('./cfg/db');
+    app.set('port', 80);
+});
+
+var pool = mysql.createPool(cfg);
 
 // Setup basic search API to find available quarters
 var api = require('./api/app');
-var base = api(db);
+var base = api(pool);
 
 base.get('webSocProvider').getSearchableQuarters(function(err, quarters) {
     app.set('quarters', []);
@@ -30,16 +39,8 @@ base.get('webSocProvider').getSearchableQuarters(function(err, quarters) {
         quarters.forEach(function(row) {
             // Create an API for each available quarter
             app.get('quarters').push(row.quarter);
-            app.use('/' + row.quarter, api(db, row.quarter));
+            app.use('/' + row.quarter, api(pool, row.quarter));
         });
-    });
-
-    app.configure('development', function () {
-        app.set('port', 3000);
-    });
-
-    app.configure('production', function () {
-        app.set('port', 80);
     });
 
     // Route includes
