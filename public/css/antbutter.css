@@ -1,0 +1,21 @@
+body {
+    padding: 15px 20px;
+}
+
+div.results {
+    padding-top: 10px;
+}
+
+div.query {
+    overflow: hidden;
+}
+
+div.quarter-selection {
+    float: left;
+    margin-right: 5px;
+    width: 150px;
+}
+
+.dropdown-toggle {
+    width: 100%;
+}

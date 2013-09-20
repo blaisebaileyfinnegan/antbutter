@@ -7,8 +7,11 @@ module.exports = function (db, quarter) {
     var Loader = require('./providers/loader');
 
     var webSocProvider = new WebSocProvider(db, quarter);
+    app.set('webSocProvider', webSocProvider);
+
     var loader = new Loader(webSocProvider);
 
+    // Route variable converters
     app.param('ccode', loader.loadCcode.bind(loader));
 
     // Routes

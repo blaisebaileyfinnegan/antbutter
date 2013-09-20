@@ -12,6 +12,25 @@ Loader.prototype.filterKeys = function (columns) {
     return columns;
 }
 
+Loader.prototype.loadQueryResult = function (req, res, next, query) {
+    // Trim white-space
+    query = query.trim();
+
+    var containsNumbers = query.test(/\d+/);
+    var containsLetters = query.test(/[a-z]|[A-Z]/);
+
+    if (containsNumbers && containsLetters) {
+        // Bio 94, CS 123
+        // Give them the courses with sections sorted by department
+    } else if (containsNumbers) {
+        // Course code: 20315
+        // Give them the course, sections, and the department
+    } else if (containsLetters) {
+        // Biological Sciences, AC ENG
+        // Give them the departments, courses, and sections
+    }
+}
+
 Loader.prototype.loadCcode = function (req, res, next, ccode) {
     this.provider.getAllByCcode(ccode, function (err, results) {
         if (err) {
@@ -20,7 +39,8 @@ Loader.prototype.loadCcode = function (req, res, next, ccode) {
             req.params.course = this.filterKeys(results);
             next();
         } else {
-            next(new Error('No such course with ccode: ' + ccode));
+            res.status(404);
+            res.end();
         }
     }.bind(this));
 }

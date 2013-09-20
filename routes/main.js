@@ -1,3 +1,3 @@
 module.exports = function (req, res) {
-    res.send('what up fools!');
+    res.render('main');
 }

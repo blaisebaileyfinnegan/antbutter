@@ -48,3 +48,16 @@ WebSocProvider.prototype.getAllByCcode = function (ccode, callback) {
 
     this.connection.query(sql, [ccode, this.termCode], this.retrieveOne(callback));
 }
+
+/**
+ * @return Array of term codes
+ */
+WebSocProvider.prototype.getSearchableQuarters = function (callback) {
+    var sql = 'SELECT distinct(quarter) FROM departments';
+
+    this.connection.query(sql, function (err, rows) {
+        if (err) throw err;
+
+        callback(null, rows);
+    });
+}
