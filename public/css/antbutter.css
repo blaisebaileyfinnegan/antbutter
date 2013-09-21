@@ -2,11 +2,42 @@ body {
     padding: 15px 20px;
 }
 
+div.container {
+    overflow:hidden;
+}
+
+.uci-yellow {
+    color: #ffde6c;
+}
+
+.uci-blue {
+    color: #024;
+}
+
+.app-title {
+    margin-top: 0;
+    font-size: 48px;
+}
+
+.anteater {
+    float: right;
+}
+
+.list-group {
+    margin-bottom: 0;
+}
+
 div.results {
-    padding-top: 10px;
+    margin: 10px 0px;
+    overflow: hidden;
 }
 
 div.query {
+    overflow: hidden;
+}
+
+div.search-tips {
+    margin-top: 10px;
     overflow: hidden;
 }
 
@@ -16,6 +47,30 @@ div.quarter-selection {
     width: 150px;
 }
 
+div.sections {
+    padding-left: 25px;
+}
+
 .dropdown-toggle {
     width: 100%;
+}
+
+div.dept-item-marker {
+    width: 15px;
+    height: 100%;
+    float: left;
+    position: absolute;
+    background: green;
+}
+
+.list-group-item:last-child {
+    margin-bottom: -1px;
+}
+
+.dept-heading {
+}
+.course_item {
+}
+
+.section_item {
 }

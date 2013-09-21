@@ -45,12 +45,11 @@ base.get('webSocProvider').getSearchableQuarters(function(err, quarters) {
 
     // Route includes
     var main = require('./routes/main');
+    var quarters = require('./routes/quarters');
 
     // Verbs
     app.get('/', main);
-    app.get('/quarters', function (req, res) {
-        res.send(app.get('quarters'));
-    });
+    app.get('/quarters', quarters);
 
     // Port
     app.listen(app.get('port'));

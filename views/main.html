@@ -3,34 +3,37 @@
 <script src="/js/antbutter.js"></script>
 {% endblock %}
 {% block content %}
-<form ng-controller="SearchController">
-    <div class="input-group">
-        <div class="input-group-btn">
-            <div class="quarter-selection">
-                <button type="button" ng-model="currentQuarter" class="btn btn-default dropdown-toggle" data-toggle="dropdown">[[currentQuarter.fullName]]&nbsp;<span class="caret"></span></button>
-                <ul class="dropdown-menu">
-                    <li ng-repeat="quarter in quarters">
-                    <a href="#" ng-click="changeQuarter(quarter)">[[quarter.fullName]]</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="query">
-                <input type="text" ng-model="query" ng-change="search(query)" name="query" class="form-control query" placeholder="Look up a department or course"></input>
-            </div>
-        </div><!-- /btn-group -->
-    </div>
-    <div class="results">
-        [[results]]
-    </div>
-</form>
-<div class="panel panel-default search-tips">
-    <div class="panel-body">
-        <h4>antbutter supports three search cases:</h4>
-        <ul>
-            <li>Department name, which lists courses in a department along with relevant information</li>
-            <li>Course code, to find a course and sections associated with it</li>
-            <li>Department name and course number, to list all sections of a course</li>
-        </ul>
+<img src="http://i.imgur.com/qXx7AbT.gif" class="anteater">
+<div class="container">
+    <h1 class="app-title"><span class="uci-blue">antbutter</span></h1>
+    <form ng-controller="SearchController">
+        <div class="input-group">
+            <div class="input-group-btn">
+                <div class="quarter-selection">
+                    <button type="button" ng-model="currentQuarter" class="btn btn-default dropdown-toggle" data-toggle="dropdown">[[currentQuarter().fullName]]&nbsp;&nbsp;<span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="quarter in quarters">
+                        <a href="#" ng-click="changeQuarter(quarter)">[[quarter.fullName]]</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="query">
+                    <input type="text" ng-model="query" ng-change="search(query)" name="query" class="form-control query" placeholder="Look up a department or course"></input>
+                </div>
+            </div><!-- /btn-group -->
+        </div>
+        <results>
+        </results>
+    </form>
+    <div class="panel panel-default search-tips">
+        <div class="panel-body">
+            <h4>antbutter supports three search cases:</h4>
+            <ul>
+                <li>Department name, which lists courses in a department along with relevant information</li>
+                <li>Course code, to find a course and sections associated with it</li>
+                <li>Department name and course number, to list all sections of a course</li>
+            </ul>
+        </div>
     </div>
 </div>
 {% endblock %}

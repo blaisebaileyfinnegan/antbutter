@@ -1,3 +1,4 @@
 module.exports = function (req, res) {
-    res.send(req.results);
+    req.results.unshift(req.type);
+    res.json(req.results);
 }
