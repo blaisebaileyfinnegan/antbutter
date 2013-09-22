@@ -17,15 +17,22 @@ module.exports = function (pool, quarter) {
     app.param('dept_id', loader.loadCoursesByDeptId.bind(loader));
     app.param('course_id', loader.loadSectionsByCourseId.bind(loader));
 
+    var meetingsLoader = loader.loadMeetingsBySectionId.bind(loader);
+    var finalLoader = loader.loadFinalBySectionId.bind(loader);
+
     // Routes
     var section = require('./routes/section');
     var courses = require('./routes/courses');
     var sections = require('./routes/sections');
     var search = require('./routes/search');
+    var meetings = require('./routes/meetings');
+    var final = require('./routes/final');
 
     app.get('/section/:ccode(\\d+)', section);
     app.get('/courses/:dept_id(\\d+)', courses);
     app.get('/sections/:course_id(\\d+)', sections);
+    app.get('/meetings/:section_id(\\d+)', meetingsLoader, meetings);
+    app.get('/final/:section_id(\\d+)', finalLoader, final);
     app.get('/search/:query', search);
 
     return app;

@@ -37,30 +37,63 @@ app.factory('quarterService', function ($http) {
     return service;
 });
 
+app.factory('timeService', function () {
+    var service = {};
+
+    service.convertMilitaryTimeToReadable = function(time, isEnd) {
+        time = time.slice(0, 5);
+
+        var hours = parseInt(time.slice(0, 2));
+        var minutes = parseInt(time.slice(3, 5));
+
+        var isPm;
+        if (hours > 12) {
+            isPm = true;
+            hours -= 12;
+        } else {
+            isPm = false;
+        }
+
+        hours = hours.toString();
+        minutes = minutes.toString();
+        if (hours.length == 1) {
+            hours = '0' + hours;
+        }
+
+        if (minutes.length == 1) {
+            minutes = '0' + minutes;
+        }
+
+        time = hours + ':' + minutes;
+
+        if (isEnd) {
+            time += (isPm ? 'pm' : 'am');
+        }
+
+        return time;
+    }
+
+    return service;
+});
+
 app.factory('searchService', function ($http) {
     var service = {};
 
     service.query = '';
 
-    service.search = function (query) {
-        return $http.get('/' + this.currentQuarter.quarter + '/search/' + query).success(function(data) {
-            return data;
-        }).error(function() {
-            return undefined;
-        });
+    var mapQuery = function (route) {
+        return function (query) {
+            return $http.get('/' + this.currentQuarter.quarter + '/' + route + '/' + query, { cache: true }).then(function(result) {
+                return result.data;
+            });
+        };
     }
 
-    service.sections = function (course_id) {
-        return $http.get('/' + this.currentQuarter.quarter + '/sections/' + course_id).then(function(result) {
-            return result.data;
-        });
-    }
-
-    service.courses = function (dept_id) {
-        return $http.get('/' + this.currentQuarter.quarter +'/courses/' + dept_id).then(function(result) {
-            return result.data;
-        });
-    }
+    service.search = mapQuery('search');
+    service.sections = mapQuery('sections'); 
+    service.courses = mapQuery('courses');
+    service.meetings = mapQuery('meetings');
+    service.final = mapQuery('final');
 
     return service;
 });
@@ -74,8 +107,13 @@ app.factory('resultsService', function ($http) {
     service.queryType = 0;
 
     service.storeResult = function(data) {
-        service.queryType = data.data.shift();
-        service.results = data.data;
+        if (data.length > 0) {
+            service.queryType = data.shift();
+        } else {
+            service.queryType = [];
+        }
+
+        service.results = data;
     }
     
     return service;
@@ -89,6 +127,8 @@ app.controller('SearchController', function ($scope, $timeout, searchService, qu
 
     currentSearch = undefined;
     $scope.search = function (query) {
+        $scope.$broadcast('teardown');
+
         if (currentSearch) {
             $timeout.cancel(currentSearch);
         }
@@ -103,13 +143,15 @@ app.controller('SearchController', function ($scope, $timeout, searchService, qu
             searchService.query = query;
             searchService.search(query).then(function(results) {
                 resultsService.storeResult(results);
-                $scope.$broadcast('search');
-            }).catch(function() {
-                resultsService.results = false;
-                $scope.$broadcast('empty');
+
+                if (results.length == 0 ) {
+                    $scope.$broadcast('empty');
+                } else {
+                    $scope.$broadcast('search');
+                }
             });
 
-        }, 700);
+        }, 200);
     }
 
     $scope.changeQuarter = function (quarter) {
@@ -128,8 +170,10 @@ app.directive('results', function (resultsService, searchService) {
         controller: function ($scope, $element) {
             $scope.query = searchService.query;
 
-            $scope.departments = [];
-            $scope.courses = []
+            $scope.$on('teardown', function (event) {
+                $scope.departments = [];
+                $scope.courses = [];
+            });
 
             $scope.$on('search', function (event) {
                 $scope.showError = false;
@@ -179,28 +223,31 @@ app.directive('department', function (searchService) {
                 }
             }
 
+            $scope.$on('teardown', function (event) {
+                $scope.dept_courses = [];
+            });
+
         },
         template:
-            '<a href="" class="list-group-item" ng-click="loadCourses(dept.dept_id)">' +
-                '<h4 class="list-group-item-heading dept-heading">[[dept.dept_title]]</h4>' +
-            '</a>' +
-            '<div class="list-group">' +
+            '<div href="" class="list-group-item no-border">' +
+                '<div class="clickable" ng-click="loadCourses(dept.dept_id)" class="course-title">' +
+                    '<h3 style="display: inline;" class="list-group-item-heading dept-heading">[[dept.dept_title]]</h3>' +
+                    '<span style="margin-left: 8px;" class="list-group-item-text">[[dept.short_name]]</span>' +
+                '</div>' +
                 '<course ng-repeat="course in dept_courses"></course>' +
             '</div>'
     }
 });
 
-app.directive('course', function (searchService) {
+app.directive('course', function (searchService, resultsService) {
     return {
         transclude: false,
         restrict: 'E',
         controller: function ($scope, $element, $attrs) {
             $scope.course_sections = [];
 
-            $scope.indent = false;
-            if ($scope.$parent.dept) {
-                $scope.indent = true;
-            }
+            $scope.isCcodeQuery = (resultsService.queryType == 2);
+            $scope.show_dept_name = (resultsService.queryType == 1) || $scope.isCcodeQuery;
 
             $scope.loadSections = function (course_id) {
                 if ($scope.course_sections.length == 0) {
@@ -209,38 +256,61 @@ app.directive('course', function (searchService) {
                     $scope.course_sections = [];
                 }
             }
+
+            $scope.$on('teardown', function (event) {
+                $scope.course_sections = [];
+            });
+
+            if ($scope.isCcodeQuery) {
+                $scope.loadSections($scope.course.course_id);
+            }
         },
         template:
-            '<a href="" ng-click="loadSections(course.course_id)" class="list-group-item">' +
-                '<span class="course-title"><strong>[[course.number]]</strong>&nbsp;[[course.title]] - [[course.section_count]] sections</span>' +
-            '</a>' +
-            '<table ng-if="course_sections.length > 0" class="table">' +
-                '<thead>' +
-                    '<tr>' +
-                        '<th>Code</th>' +
-                        '<th>Type</th>' +
-                        '<th>Section</th>' +
-                        '<th>Units</th>' +
-                        '<th>Instructor</th>' +
-                        '<th>Max</th>' +
-                        '<th>Enrolled</th>' +
-                        '<th>Req</th>' +
-                        '<th>Restrictions</th>' +
-                        '<th>Status</th>' +
-                    '</tr>' +
-                '</thead>' +
-                '<tbody>' +
-                    '<tr class="section" ng-repeat="section in course_sections"></tr>' +
-                '</tbody>' +
-            '</table>'
+            '<div class="list-group-item no-border">' +
+                '<div class="clickable" ng-click="loadSections(course.course_id)"class="course-title">' +
+                    '<span><h4 class="inline-dept-name" ng-if="show_dept_name">[[course.short_name]]&nbsp;</h4><h4 style="font-weight: normal; display:inline">[[course.number]]</h4>&nbsp;&nbsp;&nbsp;[[course.title]] - <span class="section_count">[[course.section_count]] sections</span></span>' +
+                '</div>' +
+                '<table ng-if="course_sections.length > 0" class="table">' +
+                    '<thead>' +
+                        '<tr>' +
+                            '<th>Code</th>' +
+                            '<th>Type</th>' +
+                            '<th>Section</th>' +
+                            '<th>Units</th>' +
+                            '<th>Instructor</th>' +
+                            '<th class="time">Meetings</th>' +
+                            '<th class="time">Final</th>' +
+                            '<th>Enrolled</th>' +
+                            '<th>Max</th>' +
+                            '<th>Req</th>' +
+                            '<th>Restrictions</th>' +
+                            '<th>Status</th>' +
+                        '</tr>' +
+                    '</thead>' +
+                    '<tbody>' +
+                        '<tr class="section" ng-repeat="section in course_sections"></tr>' +
+                    '</tbody>' +
+                '</table>' +
+            '</div>' 
     }
 });
 
-app.directive('section', function() {
+app.directive('section', function(searchService, resultsService) {
     return {
         transclude: false,
         restrict: 'C',
         controller: function ($scope, $element, $attrs) {
+            $scope.isLecture = ($scope.section.type == 'Lecture');
+
+            $scope.section.meetings = searchService.meetings($scope.section.section_id).catch(function (){
+                return undefined;
+            });
+
+            $scope.finalLoaded = false;
+            $scope.section.final = searchService.final($scope.section.section_id).catch(function (){
+                return undefined;
+            });
+
         },
         template:
             '<td>' +
@@ -259,10 +329,17 @@ app.directive('section', function() {
                 '[[section.instructor]]' +
             '</td>' +
             '<td>' +
-                '[[section.max]]' +
+                '<div ng-repeat="meeting in section.meetings" class="time">[[meeting | meeting]]</div>' +
+                '<div ng-if="!section.meetings">TBA</div>' +
             '</td>' +
             '<td>' +
+                '<div ng-repeat="final in section.final" class="time">[[final | final]]</div>' +
+                '<div ng-if="!section.final">TBA</div>' +
+            '<td>' +
                 '[[section.enrolled]]' +
+            '</td>' +
+            '<td>' +
+                '[[section.max]]' +
             '</td>' +
             '<td>' +
                 '[[section.req]]' +
@@ -271,7 +348,71 @@ app.directive('section', function() {
                 '[[section.restrictions]]' +
             '</td>' +
             '<td>' +
-                '[[section.status]]' +
+                '<span ng-class="{open: section.status==open, waitl: section.status==waitl, full: section.status==full, newonly: section.status==newonly}">' +
+                    '[[section.status]]' +
+                '</span>' +
             '</td>'
+    }
+});
+
+app.filter('meeting', function(timeService) {
+    return function(input) {
+        if (!input || (input == 'TBA')) {
+            return 'TBA';
+        } else {
+            var time ='';
+            if (input.sunday) {
+                time += 'Su';
+            }
+
+            if (input.monday) {
+                time += 'M';
+            }
+
+            if (input.tuesday) {
+                time += 'Tu';
+            }
+
+            if (input.wednesday) {
+                time += 'W';
+            }
+
+            if (input.thursday) {
+                time += 'Th';
+            }
+
+            if (input.friday) {
+                time += 'F';
+            }
+
+            if (input.saturday) {
+                time += 'Sa';
+            }
+
+            time += ' ';
+
+            time +=
+                timeService.convertMilitaryTimeToReadable(input.start) + ' - ' +
+                timeService.convertMilitaryTimeToReadable(input.end, true) +
+                ' at ' + (input.place ? input.place : 'TBA');
+
+            return time;
+        }
+    }
+});
+
+app.filter('final', function(timeService) {
+    return function(input) {
+        if (!input || input.length == 0 || (input == 'TBA')) {
+            return 'TBA';
+        } else {
+            var time = '';
+            time +=
+    input.day + ', ' +
+    timeService.convertMilitaryTimeToReadable(input.start) + ' - ' +
+    timeService.convertMilitaryTimeToReadable(input.end, true);
+
+return time;
+        }
     }
 });

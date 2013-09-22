@@ -1,9 +1,13 @@
+html {
+    overflow-y: scroll;
+}
+
 body {
     padding: 15px 20px;
 }
 
 div.container {
-    overflow:hidden;
+    max-width: 1400px;
 }
 
 .uci-yellow {
@@ -15,12 +19,30 @@ div.container {
 }
 
 .app-title {
-    margin-top: 0;
-    font-size: 48px;
+    margin: 0;
+    font-size: 64px;
+    display: inline-block;
+    overflow:hidden;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin-bottom: 25px;
+}
+
+.header {
+    position: relative;
+    margin-bottom: 5px;
+}
+
+.clearer {
+    clear: both;
 }
 
 .anteater {
+    width: 205px;
+    height: 131px;
     float: right;
+    display: inline-block;
 }
 
 .list-group {
@@ -63,6 +85,9 @@ div.dept-item-marker {
     background: green;
 }
 
+.section_count {
+    font-size: 11px;
+}
 .list-group-item:last-child {
     margin-bottom: -1px;
 }
@@ -72,5 +97,45 @@ div.dept-item-marker {
 .course_item {
 }
 
+.lecture {
+    font-weight:bold;
+}
 .section_item {
+}
+
+.no-border {
+    border: none;
+}
+
+.inline-dept-name {
+    display: inline;
+}
+
+.clickable {
+    padding: 4px;
+}
+.clickable:hover {
+    background-color: #ffde6c;
+    cursor: pointer;
+}
+
+.list-group-item {
+    padding: 5px 15px;
+}
+
+.time {
+    min-width: 10em;
+}
+
+.table {
+    margin-bottom: 0;
+    font-size: 85%;
+}
+
+tr {
+    padding: 4px;
+}
+
+.table thead>tr>th, .table tbody>tr>th, .table tfoot>tr>th, .table thead>tr>td, .table tbody>tr>td, .table tfoot>tr>td {
+    padding: 4px;
 }

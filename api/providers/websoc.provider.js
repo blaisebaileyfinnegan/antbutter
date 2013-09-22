@@ -58,13 +58,25 @@ WebSocProvider.prototype.buildDeptClause = function(terms) {
 }
 
 WebSocProvider.prototype.findCoursesByWildcard = function (terms, callback) {
-    var sql = 'SELECT d.dept_id, d.quarter, d.short_name, d.college_title, d.college_comment, d.dept_title, d.dept_comment, c.course_id, c.number, c.title, count(s.section_id) as section_count FROM courses as c INNER JOIN departments as d ON c.dept_id = d.dept_id INNER JOIN sections as s ON s.course_id = c.course_id WHERE ' + this.buildDeptClause(terms[0]) + ' AND LOWER(c.number) = ? AND d.quarter = ? GROUP BY c.course_id ORDER BY d.short_name DESC';
+    var sql = 'SELECT d.dept_id, d.quarter, d.short_name, d.college_title, d.college_comment, d.dept_title, d.dept_comment, c.course_id, c.number, c.title, count(s.section_id) as section_count FROM courses as c INNER JOIN departments as d ON c.dept_id = d.dept_id INNER JOIN sections as s ON s.course_id = c.course_id WHERE ' + this.buildDeptClause(terms[0]) + ' AND LOWER(c.number) LIKE ? AND d.quarter = ? GROUP BY c.course_id ORDER BY d.short_name DESC';
 
     terms[0] = this.prepareTerms(terms[0]);
 
-    var params = [terms[1], this.termCode];
+    var params = [terms[1] + "%", this.termCode];
 
     this.retrieveAll(sql, terms[0].concat(params), callback);
+}
+
+WebSocProvider.prototype.getMeetingsBySectionId = function (section_id, callback) {
+    var sql = 'SELECT m.meeting_id, m.section_id, m.start, m.end, m.place, m.sunday, m.monday, m.tuesday, m.wednesday, m.thursday, m.friday, m.saturday FROM meetings as m INNER JOIN sections as s ON s.section_id = m.section_id WHERE s.section_id = ?';
+
+    this.retrieveAll(sql, [section_id], callback);
+}
+
+WebSocProvider.prototype.getFinalBySectionId = function (section_id, callback) {
+    var sql = 'SELECT f.final_id, f.section_id, f.day, f.start, f.end FROM finals as f INNER JOIN sections as s ON s.section_id = f.section_id WHERE s.section_id = ?';
+
+    this.retrieveAll(sql, [section_id], callback);
 }
 
 /**
@@ -149,9 +161,9 @@ WebSocProvider.prototype.getSectionByCcode = function (ccode, callback) {
  * @param int ccode
  */
 WebSocProvider.prototype.getAllByCcode = function (ccode, callback) {
-    var sql = 'SELECT d.dept_id, d.quarter, d.short_name, d.college_title, d.college_comment, d.dept_title, d.dept_comment, c.course_id, c.number, c.title, s.section_id, s.ccode, s.course_id, s.type, s.section, s.units, s.instructor, s.max, s.enrolled, s.req, s.restrictions, s.textbooks, s.web, s.status FROM sections as s INNER JOIN courses as c ON c.course_id = s.course_id INNER JOIN departments as d ON d.dept_id = c.dept_id WHERE s.ccode = ? AND d.quarter = ?';
+    var sql = 'SELECT d.dept_id, d.quarter, d.short_name, d.college_title, d.college_comment, d.dept_title, d.dept_comment, c.course_id, c.number, c.title, s.section_id, s.ccode, s.course_id, s.type, s.section, s.units, s.instructor, s.max, s.enrolled, s.req, s.restrictions, s.textbooks, s.web, s.status, count.section_count as section_count FROM sections as s  INNER JOIN courses as c ON c.course_id = s.course_id INNER JOIN departments as d ON d.dept_id = c.dept_id, (SELECT count(s.section_id) as section_count FROM sections as s, (SELECT c.course_id FROM courses as c INNER JOIN sections as s ON s.course_id = c.course_id WHERE s.ccode = ?) target WHERE s.course_id = target.course_id) count WHERE s.ccode = ? AND d.quarter = ?';
 
-    this.retrieveAll(sql, [ccode, this.termCode], callback);
+    this.retrieveAll(sql, [ccode, ccode, this.termCode], callback);
 }
 
 WebSocProvider.prototype.getSearchableQuarters = function (callback) {

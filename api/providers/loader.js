@@ -12,7 +12,7 @@ Loader.prototype.onComplete = function (req, res, next, storage) {
             req[storage] = results;
             next();
         } else {
-            res.status(404);
+            res.status(204);
             res.end();
         }
     }
@@ -67,4 +67,12 @@ Loader.prototype.loadCoursesByDeptId = function (req, res, next, dept_id) {
 
 Loader.prototype.loadSectionsByCourseId = function (req, res, next, course_id) {
     this.provider.getSectionsByCourseId(course_id, this.onComplete(req, res, next, 'sections'));
+}
+
+Loader.prototype.loadMeetingsBySectionId = function (req, res, next) {
+    this.provider.getMeetingsBySectionId(req.params.section_id, this.onComplete(req, res, next, 'meetings'));
+}
+
+Loader.prototype.loadFinalBySectionId = function (req, res, next) {
+    this.provider.getFinalBySectionId(req.params.section_id, this.onComplete(req, res, next, 'final'));
 }
