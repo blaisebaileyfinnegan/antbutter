@@ -3,6 +3,8 @@ antbutter
 
 An alternative UCI Schedule of Classes search application, powered by a RESTful API
 
+![Application](http://i.imgur.com/PjGjfOT.png)
+
 Verbs
 -----
 - `GET /F13/search/:query`
