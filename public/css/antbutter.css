@@ -101,15 +101,8 @@ div.dept-item-marker {
     margin-bottom: -1px;
 }
 
-.dept-heading {
-}
-.course_item {
-}
-
 .lecture {
     font-weight:bold;
-}
-.section_item {
 }
 
 .no-border {
@@ -120,9 +113,6 @@ div.dept-item-marker {
     display: inline;
 }
 
-.clickable {
-    padding: 4px;
-}
 .clickable:hover {
     background-color: #ffde6c;
     cursor: pointer;
@@ -171,11 +161,16 @@ tr {
     right: 0;
     margin-right: 2em;
     display: inline-block;
+    font-size: 13px;
 }
-
 
 .course-title {
     float: left;
     display: inline-block;
     width: 100%;
+    padding: 2px;
+}
+
+.dept-title {
+    padding: 4px;
 }
