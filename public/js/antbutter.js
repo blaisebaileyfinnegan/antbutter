@@ -232,7 +232,7 @@ app.directive('department', function (searchService) {
         },
         template:
             '<div href="" class="list-group-item no-border">' +
-                '<div class="clickable" ng-click="loadCourses(dept.dept_id)" class="course-title">' +
+                '<div class="clickable dept-title" ng-click="loadCourses(dept.dept_id)">' +
                     '<h3 style="display: inline;" class="list-group-item-heading dept-heading">[[dept.dept_title]]</h3>' +
                     '<span style="margin-left: 8px;" class="list-group-item-text">[[dept.short_name]]</span>' +
                 '</div>' +
