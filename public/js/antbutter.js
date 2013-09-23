@@ -49,18 +49,16 @@ app.factory('timeService', function () {
         var isPm;
         if (hours >= 12) {
             isPm = true;
-            if (hours >= 13) {
+
+            if (hours >= 13)
                 hours -= 12;
-            }
+
         } else {
             isPm = false;
         }
 
         hours = hours.toString();
         minutes = minutes.toString();
-        if (hours.length == 1) {
-            hours = hours;
-        }
 
         if (minutes.length == 1) {
             minutes = '0' + minutes;
@@ -253,7 +251,20 @@ app.directive('course', function (searchService, resultsService) {
 
             $scope.loadSections = function (course_id) {
                 if ($scope.course_sections.length == 0) {
-                    $scope.course_sections = searchService.sections(course_id);
+                    $scope.course_sections = searchService.sections(course_id).then(function (section) {
+                        // In case of multiple instructors
+                        section.forEach(function(element) {
+                            var regex = /\.(?=\w|\s)/;
+                            var index = element.instructor.search(regex);
+                            if (index > -1) {
+                                element.instructor = [element.instructor.slice(0, index + 1), element.instructor.slice(index + 1)];
+                            } else {
+                                element.instructor = [element.instructor];
+                            }
+                        });
+
+                        return section;
+                    });
                 } else {
                     $scope.course_sections = [];
                 }
@@ -328,7 +339,11 @@ app.directive('section', function(searchService, resultsService) {
                 '[[section.units]]' +
             '</td>' +
             '<td>' +
-                '[[section.instructor]]' +
+                '<div ng-repeat="instructor in section.instructor">' +
+                    '<a href="https://eaterevals.eee.uci.edu/browse/instructor#[[instructor.slice(0, -4)]]" target="_blank">' +
+                        '[[instructor]]' +
+                    '</a>' +
+                '</div>' +
             '</td>' +
             '<td>' +
                 '<div ng-repeat="meeting in section.meetings" class="time">[[meeting | meeting]]</div>' +
@@ -349,10 +364,11 @@ app.directive('section', function(searchService, resultsService) {
             '<td>' +
                 '[[section.restrictions]]' +
             '</td>' +
-            '<td>' +
-                '<span ng-class="{open: section.status==open, waitl: section.status==waitl, full: section.status==full, newonly: section.status==newonly}">' +
-                    '[[section.status]]' +
-                '</span>' +
+            '<td ng-switch="section.status">' +
+                '<span ng-switch-when="open" class="open">[[section.status]]</span>' +
+                '<span ng-switch-when="waitl" class="waitl">[[section.status]]</span>' +
+                '<span ng-switch-when="full" class="full">[[section.status]]</span>' +
+                '<span ng-switch-when="newonly" class="newonly">[[section.status]]</span>' +
             '</td>'
     }
 });
@@ -416,5 +432,10 @@ app.filter('final', function(timeService) {
 
             return time;
         }
+    }
+});
+
+app.filter('eatereval', function() {
+    return function(input) {
     }
 });
