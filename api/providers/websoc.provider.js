@@ -167,7 +167,13 @@ WebSocProvider.prototype.getAllByCcode = function (ccode, callback) {
 }
 
 WebSocProvider.prototype.getSearchableQuarters = function (callback) {
-    var sql = 'SELECT distinct(quarter) FROM departments';
+    var sql = 'SELECT q.quarter, q.year_term as yearTerm FROM quarters as q';
 
     this.retrieveAll(sql, [], callback);
+}
+
+WebSocProvider.prototype.getYearTerm = function (quarter, callback) {
+    var sql = 'SELECT year_term as yearTerm FROM quarters WHERE quarter = ?';
+
+    this.retrieveOne(sql, [quarter], callback);
 }

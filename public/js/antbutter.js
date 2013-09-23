@@ -17,13 +17,14 @@ app.factory('quarterService', function ($http) {
 
     var mapQuarters = function (quarters) {
         return quarters.map(function (element) {
-            var letter = element[0];
+            var letter = element.quarter[0];
             var name = map[letter];
-            var year = '20' + element.slice(1);
+            var year = '20' + element.quarter.slice(1);
 
             return {
-                quarter: element,
-                fullName: name + ' ' + year
+                quarter: element.quarter,
+                fullName: name + ' ' + year,
+                yearTerm: element.yearTerm
             }
         })
     }
@@ -143,6 +144,7 @@ app.controller('SearchController', function ($scope, $timeout, searchService, qu
             searchService.query = query;
             searchService.search(query).then(function(results) {
                 resultsService.storeResult(results);
+                resultsService.quarter = searchService.currentQuarter;
 
                 if (results.length == 0 ) {
                     $scope.$broadcast('empty');
@@ -249,6 +251,12 @@ app.directive('course', function (searchService, resultsService) {
             $scope.isCcodeQuery = (resultsService.queryType == 2);
             $scope.show_dept_name = (resultsService.queryType == 1) || $scope.isCcodeQuery;
 
+            if (!$scope.course.short_name) {
+                $scope.course.short_name = $scope.dept.short_name;
+            }
+
+            $scope.course.websoc = "http://websoc.reg.uci.edu/perl/WebSoc?YearTerm=" + resultsService.quarter.yearTerm + "&Dept=" + encodeURIComponent($scope.course.short_name) + "&CourseNum=" + $scope.course.number;
+
             $scope.loadSections = function (course_id) {
                 if ($scope.course_sections.length == 0) {
                     $scope.course_sections = searchService.sections(course_id).then(function (section) {
@@ -280,8 +288,12 @@ app.directive('course', function (searchService, resultsService) {
         },
         template:
             '<div class="list-group-item no-border">' +
-                '<div class="clickable" ng-click="loadSections(course.course_id)"class="course-title">' +
-                    '<span><h4 class="inline-dept-name" ng-if="show_dept_name">[[course.short_name]]&nbsp;</h4><h4 style="font-weight: normal; display:inline">[[course.number]]</h4>&nbsp;&nbsp;&nbsp;[[course.title]] - <span class="section_count">[[course.section_count]] sections</span></span>' +
+                '<div class="clickable">' +
+                    '<div class="course-title" ng-click="loadSections(course.course_id)">' +
+                        '<span><h4 class="inline-dept-name" ng-if="show_dept_name">[[course.short_name]]&nbsp;</h4><h4 style="font-weight: normal; display:inline">[[course.number]]</h4>&nbsp;&nbsp;&nbsp;[[course.title]] - <span class="section_count">[[course.section_count]] sections</span></span>' +
+                    '</div>' +
+                    '<div class="websoc"><a href="[[course.websoc]]" target="_blank">View in WebSoc</a></div>' +
+                    '<div class="clearer"><!-- --></div>' +
                 '</div>' +
                 '<table ng-if="course_sections.length > 0" class="table">' +
                     '<thead>' +
