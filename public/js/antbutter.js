@@ -47,9 +47,11 @@ app.factory('timeService', function () {
         var minutes = parseInt(time.slice(3, 5));
 
         var isPm;
-        if (hours > 12) {
+        if (hours >= 12) {
             isPm = true;
-            hours -= 12;
+            if (hours >= 13) {
+                hours -= 12;
+            }
         } else {
             isPm = false;
         }
@@ -57,7 +59,7 @@ app.factory('timeService', function () {
         hours = hours.toString();
         minutes = minutes.toString();
         if (hours.length == 1) {
-            hours = '0' + hours;
+            hours = hours;
         }
 
         if (minutes.length == 1) {
@@ -408,11 +410,11 @@ app.filter('final', function(timeService) {
         } else {
             var time = '';
             time +=
-    input.day + ', ' +
-    timeService.convertMilitaryTimeToReadable(input.start) + ' - ' +
-    timeService.convertMilitaryTimeToReadable(input.end, true);
+            input.day + ', ' +
+            timeService.convertMilitaryTimeToReadable(input.start) + ' - ' +
+            timeService.convertMilitaryTimeToReadable(input.end, true);
 
-return time;
+            return time;
         }
     }
 });
