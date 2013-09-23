@@ -38,7 +38,7 @@ base.get('webSocProvider').getSearchableQuarters(function(err, quarters) {
 
         quarters.forEach(function(row) {
             // Create an API for each available quarter
-            app.get('quarters').push(row.quarter);
+            app.get('quarters').push(row);
             app.use('/' + row.quarter, api(pool, row.quarter));
         });
     });

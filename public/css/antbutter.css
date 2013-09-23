@@ -26,12 +26,21 @@ div.container {
     position: absolute;
     bottom: 0;
     left: 0;
-    margin-bottom: 25px;
+    margin-bottom: 15px;
+    height: 
 }
+
+.app-about {
+    position: absolute;
+    bottom: 0;
+    margin-left: 3px;
+}
+
 
 .header {
     position: relative;
-    margin-bottom: 5px;
+    margin-bottom: 2px;
+    color: #666;
 }
 
 .clearer {
@@ -154,4 +163,19 @@ tr {
 
 .open {
     color: #080;
+}
+
+.websoc {
+    float: right;
+    position: absolute;
+    right: 0;
+    margin-right: 2em;
+    display: inline-block;
+}
+
+
+.course-title {
+    float: left;
+    display: inline-block;
+    width: 100%;
 }

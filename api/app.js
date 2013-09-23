@@ -2,6 +2,7 @@ var express = require('express');
 module.exports = function (pool, quarter) {
     var app = express();
 
+    // Setup
     // Our DB was injected in the main app
     var WebSocProvider = require('./providers/websoc.provider');
     var Loader = require('./providers/loader');
