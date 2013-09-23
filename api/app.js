@@ -28,6 +28,7 @@ module.exports = function (pool, quarter) {
     var meetings = require('./routes/meetings');
     var final = require('./routes/final');
 
+    // Expose API verbs
     app.get('/section/:ccode(\\d+)', section);
     app.get('/courses/:dept_id(\\d+)', courses);
     app.get('/sections/:course_id(\\d+)', sections);
