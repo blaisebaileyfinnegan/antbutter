@@ -156,12 +156,12 @@ tr {
 }
 
 .websoc {
-    float: right;
+    position: absolute;
+    right: 0;
     margin-top: 3px;
     margin-right: 20px;
-    width: 50%
     display: inline-block;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .course-title {
@@ -199,4 +199,8 @@ tr:nth-child(even) {
 
 .results_count {
     margin-left: 12px;
+}
+
+.external-link {
+    margin-right: 12px;
 }
