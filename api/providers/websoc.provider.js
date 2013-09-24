@@ -74,7 +74,7 @@ WebSocProvider.prototype.getMeetingsBySectionId = function (section_id, callback
 }
 
 WebSocProvider.prototype.findInstructorsByWildcard = function (term, callback) {
-    var sql = 'SELECT i.instructor_id, i.name FROM instructors as i INNER JOIN sections2instructors as s2i ON s2i.instructor_id = i.instructor_id WHERE LOWER(i.name) LIKE ? AND i.name <> "staff" GROUP BY i.instructor_id ORDER BY i.name ASC';
+    var sql = 'SELECT i.instructor_id, i.name FROM instructors as i INNER JOIN sections2instructors as s2i ON s2i.instructor_id = i.instructor_id WHERE LOWER(i.name) LIKE ? AND i.name <> "staff" GROUP BY i.instructor_id ORDER BY i.name ASC LIMIT 100';
 
     term = "%" + term + "%";
 

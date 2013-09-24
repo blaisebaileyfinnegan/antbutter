@@ -31,7 +31,7 @@ app.factory('quarterService', function ($http) {
 
     service.getQuarters = function() {
         return $http.get('/quarters').then(function (result) {
-            return mapQuarters(result.data);
+            return mapQuarters(result.data).reverse();
         });
     }
 
@@ -175,6 +175,7 @@ app.controller('SearchController', function ($scope, $timeout, searchService, qu
 
     $scope.changeQuarter = function (quarter) {
        searchService.currentQuarter = quarter;
+       $scope.$broadcast('teardown');
     }
 
     $scope.currentQuarter = function () {
