@@ -95,6 +95,7 @@ app.factory('searchService', function ($http) {
     service.courses = mapQuery('courses');
     service.meetings = mapQuery('meetings');
     service.final = mapQuery('final');
+    service.instructors = mapQuery('instructors');
 
     return service;
 });
@@ -105,19 +106,26 @@ app.factory('resultsService', function ($http) {
 
     service.results = [];
     service.query = undefined;
-    service.queryType = 0;
-
-    service.storeResult = function(data) {
-        if (data.length > 0) {
-            service.queryType = data.shift();
-        } else {
-            service.queryType = [];
-        }
-
-        service.results = data;
-    }
     
     return service;
+});
+
+app.factory('externalLinksService', function () {
+    var service = {};
+
+    service.getCourseWebsoc = function(yearTerm, short_name, number) {
+        return "http://websoc.reg.uci.edu/perl/WebSoc?YearTerm=" + yearTerm + "&Dept=" + encodeURIComponent(short_name) + "&CourseNum=" + number;
+    }
+
+    service.getInstructorEvaluations = function (name) {
+        return "https://eaterevals.eee.uci.edu/browse/instructor#" + encodeURIComponent(name.slice(0, -4));
+    }
+
+    service.getRateMyProfessor = function(name) {
+        return "http://ratemyprofessors.com/SelectTeacher.jsp?searchName=" + encodeURIComponent(name.slice(0, -4)) + "&search_submit1=Search&sid=1074#ratingTable";
+    }
+
+    return service
 });
 
 app.controller('SearchController', function ($scope, $timeout, searchService, quarterService, resultsService) {
@@ -143,10 +151,19 @@ app.controller('SearchController', function ($scope, $timeout, searchService, qu
 
             searchService.query = query;
             searchService.search(query).then(function(results) {
-                resultsService.storeResult(results);
+                resultsService.results = results;
                 resultsService.quarter = searchService.currentQuarter;
 
-                if (results.length == 0 ) {
+                var empty = true;
+                for (var key in resultsService.results) {
+                    if (resultsService.results[key].length > 0) {
+                        empty = false;
+
+                        break;
+                    }
+                }
+
+                if (empty) {
                     $scope.$broadcast('empty');
                 } else {
                     $scope.$broadcast('search');
@@ -171,41 +188,75 @@ app.directive('results', function (resultsService, searchService) {
         restrict: 'E',
         controller: function ($scope, $element) {
             $scope.query = searchService.query;
+            $scope.name = 'results';
 
             $scope.$on('teardown', function (event) {
                 $scope.departments = [];
                 $scope.courses = [];
+                $scope.instructors = [];
             });
 
             $scope.$on('search', function (event) {
                 $scope.showError = false;
 
-                switch(resultsService.queryType) {
-                    case 0:
-                        $scope.departments = resultsService.results;
-                        break;
-                    case 1:
-                    case 2:
-                        $scope.courses = resultsService.results;
-                        break;
-                }
+                $scope.departments = resultsService.results.departments;
+                $scope.courses = resultsService.results.courses;
+                $scope.instructors = resultsService.results.instructors;
+
+                $scope.$broadcast('results');
             });
 
             $scope.$on('empty', function(event) {
                 $scope.departments = [];
                 $scope.courses = []
+                $scope.instructors = [];
                 $scope.showError = true;
             });
-
 
         },
         template:
             '<div class="results">' +
-                '<div ng-show="showError" class="alert alert-danger results">No results were found for <span ng-bind="query"></span></div>' +
+                '<div ng-show="showError" class="results">No results were found for <span ng-bind="query"></span></div>' +
                 '<div class="list-group">' +
-                    '<department ng-repeat="dept in departments" ng-show="courses.length == 0"></department>' +
-                    '<course ng-repeat="course in courses" ng-show="courses.length > 0"></course>' +
+                    '<category title="Departments" use="departments">' +
+                        '<department ng-repeat="dept in departments"></department>' +
+                    '</category>' +
+                    '<category title="Courses" use="courses">' +
+                        '<course ng-repeat="course in courses"></course>' +
+                    '</category>' +
+                    '<category title="Instructors" use="instructors">' +
+                        '<instructor ng-repeat="instructor in instructors"></course>' +
+                    '</category>' +
                 '</div>' +
+            '</div>'
+    }
+});
+
+app.directive('category', function () {
+    return {
+        transclude: true,
+        restrict: 'E',
+        scope: {
+            title: '@title',
+            collection: '=use'
+        },
+        controller: function ($scope, $element, $attrs) {
+            $scope.expand = false;
+
+            $scope.$watch('collection', function() {
+                $scope.expand = $scope.collection && $scope.collection.length < 5;
+            });
+        },
+        template:
+            '<div ng-show="collection" class="page-header">' +
+                '<a href="" ng-click="expand = !expand">' +
+                    '<h1 class="category">[[title]]</h1>' +
+                '</a>' +
+                '<span class="results_count">' +
+                    '[[collection.length]] results' +
+                '</span>' +
+            '</div>' +
+            '<div ng-show="expand" ng-transclude>' +
             '</div>'
     }
 });
@@ -216,6 +267,7 @@ app.directive('department', function (searchService) {
         restrict: 'E',
         controller: function ($scope, $element, $attrs) {
             $scope.dept_courses = [];
+            $scope.name = 'department';
 
             $scope.loadCourses = function (dept_id) {
                 if ($scope.dept_courses.length == 0) {
@@ -241,36 +293,49 @@ app.directive('department', function (searchService) {
     }
 });
 
-app.directive('course', function (searchService, resultsService) {
+app.directive('instructor', function (searchService, resultsService, externalLinksService) {
     return {
         transclude: false,
         restrict: 'E',
         controller: function ($scope, $element, $attrs) {
+            $scope.name = 'instructor';
+            $scope.evaluation = externalLinksService.getInstructorEvaluations($scope.instructor.name);
+            $scope.ratemyprofessor = externalLinksService.getRateMyProfessor($scope.instructor.name);
+        },
+        template:
+            '<div class="list-group-item no-border">' +
+                '<div class="clickable">' +
+                    '<div class="course-title">' +
+                        '[[instructor.name]]' +
+                    '</div>' +
+                    '<div class="websoc"><a href="[[evaluation]]" target="_blank">EaterEvals</a></div>' +
+                    '<div class="websoc"><a href="[[ratemyprofessor]]" target="_blank">Rate My Professor</a></div>' +
+                    '<div class="clearer"><!-- --></div>' +
+                '</div>' +
+            '</div>'
+    }
+});
+
+app.directive('course', function (externalLinksService, searchService, resultsService) {
+    return {
+        transclude: false,
+        restrict: 'E',
+        controller: function ($scope, $element, $attrs) {
+            $scope.name = 'course';
             $scope.course_sections = [];
 
-            $scope.isCcodeQuery = (resultsService.queryType == 2);
-            $scope.show_dept_name = (resultsService.queryType == 1) || $scope.isCcodeQuery;
+            $scope.isCcodeQuery = ($scope.$parent.name != 'department');
+            $scope.show_dept_name = $scope.$parent.name == 'results';
 
             if (!$scope.course.short_name) {
                 $scope.course.short_name = $scope.dept.short_name;
             }
 
-            $scope.course.websoc = "http://websoc.reg.uci.edu/perl/WebSoc?YearTerm=" + resultsService.quarter.yearTerm + "&Dept=" + encodeURIComponent($scope.course.short_name) + "&CourseNum=" + $scope.course.number;
+            $scope.course.websoc = externalLinksService.getCourseWebsoc(resultsService.quarter.yearTerm, $scope.course.short_name, $scope.course.number);
 
             $scope.loadSections = function (course_id) {
                 if ($scope.course_sections.length == 0) {
                     $scope.course_sections = searchService.sections(course_id).then(function (section) {
-                        // In case of multiple instructors
-                        section.forEach(function(element) {
-                            var regex = /\.(?=\w|\s)/;
-                            var index = element.instructor.search(regex);
-                            if (index > -1) {
-                                element.instructor = [element.instructor.slice(0, index + 1), element.instructor.slice(index + 1)];
-                            } else {
-                                element.instructor = [element.instructor];
-                            }
-                        });
-
                         return section;
                     });
                 } else {
@@ -282,7 +347,7 @@ app.directive('course', function (searchService, resultsService) {
                 $scope.course_sections = [];
             });
 
-            if ($scope.isCcodeQuery) {
+            if (resultsService.results.courses && resultsService.results.courses.length == 1) {
                 $scope.loadSections($scope.course.course_id);
             }
         },
@@ -292,7 +357,7 @@ app.directive('course', function (searchService, resultsService) {
                     '<div class="course-title" ng-click="loadSections(course.course_id)">' +
                         '<span><h4 class="inline-dept-name" ng-if="show_dept_name">[[course.short_name]]&nbsp;</h4><h4 style="font-weight: normal; display:inline">[[course.number]]</h4>&nbsp;&nbsp;&nbsp;[[course.title]] - <span class="section_count">[[course.section_count]] sections</span></span>' +
                     '</div>' +
-                    '<div class="websoc"><a href="[[course.websoc]]" target="_blank">View in WebSoc</a></div>' +
+                    '<div class="websoc"><a href="[[course.websoc]]" target="_blank">View in Websoc</a></div>' +
                     '<div class="clearer"><!-- --></div>' +
                 '</div>' +
                 '<table ng-if="course_sections.length > 0" class="table">' +
@@ -320,7 +385,7 @@ app.directive('course', function (searchService, resultsService) {
     }
 });
 
-app.directive('section', function(searchService, resultsService) {
+app.directive('section', function(externalLinksService, searchService, resultsService) {
     return {
         transclude: false,
         restrict: 'C',
@@ -333,6 +398,18 @@ app.directive('section', function(searchService, resultsService) {
 
             $scope.finalLoaded = false;
             $scope.section.final = searchService.final($scope.section.section_id).catch(function (){
+                return undefined;
+            });
+
+            $scope.section.instructors = searchService.instructors($scope.section.section_id).then(function(instructors) {
+                instructors = instructors.map(function(element) {
+                    element.evaluations = externalLinksService.getInstructorEvaluations(element.name);
+                    element.rateMyProfessor = externalLinksService.getRateMyProfessor(element.name);
+                    element.showLinks = false;
+                    return element;
+                });
+                return instructors;
+            }).catch(function (){
                 return undefined;
             });
 
@@ -351,10 +428,18 @@ app.directive('section', function(searchService, resultsService) {
                 '[[section.units]]' +
             '</td>' +
             '<td>' +
-                '<div ng-repeat="instructor in section.instructor">' +
-                    '<a href="https://eaterevals.eee.uci.edu/browse/instructor#[[instructor.slice(0, -4)]]" target="_blank">' +
-                        '[[instructor]]' +
+                '<div ng-repeat="instructor in section.instructors">' +
+                    '<a href="" ng-click="instructor.showLinks = !instructor.showLinks" target="_blank">' +
+                        '[[instructor.name]]' +
                     '</a>' +
+                    '<div ng-if="instructor.showLinks">' +
+                        '<div><a href="[[instructor.rateMyProfessor]]" target="_blank">' +
+                            'Rate My Professor' +
+                        '</a></div>' +
+                        '<div><a href="[[instructor.evaluations]]" target="_blank">' +
+                            'EaterEvals' +
+                        '</a></div>' +
+                    '</div>' +
                 '</div>' +
             '</td>' +
             '<td>' +

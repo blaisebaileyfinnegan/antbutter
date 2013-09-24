@@ -1,4 +1,9 @@
 module.exports = function (req, res) {
-    req.results.unshift(req.type);
-    res.json(req.results);
+    var payload = {
+        courses: req.courses,
+        departments: req.departments,
+        instructors: req.instructors
+    }
+
+    res.json(payload);
 }
