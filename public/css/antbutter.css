@@ -157,9 +157,9 @@ tr {
 
 .websoc {
     float: right;
-    position: absolute;
-    right: 0;
-    margin-right: 2em;
+    margin-top: 3px;
+    margin-right: 20px;
+    width: 50%
     display: inline-block;
     font-size: 13px;
 }
@@ -167,10 +167,36 @@ tr {
 .course-title {
     float: left;
     display: inline-block;
-    width: 100%;
+    width: 50%;
     padding: 2px;
 }
 
 .dept-title {
     padding: 4px;
+}
+
+tr:nth-child(even) {
+    background: #f4f4f4;
+}
+
+.instructor {
+    padding: 0;
+}
+
+.page-header {
+    margin-top: 4px;
+    margin-bottom: 2px;
+}
+
+.page-header h1 {
+    margin: 0;
+}
+
+.category {
+    display: inline;
+    margin-top: 8px;
+}
+
+.results_count {
+    margin-left: 12px;
 }

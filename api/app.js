@@ -20,6 +20,7 @@ module.exports = function (pool, quarter) {
 
     var meetingsLoader = loader.loadMeetingsBySectionId.bind(loader);
     var finalLoader = loader.loadFinalBySectionId.bind(loader);
+    var instructorsLoader = loader.loadInstructorsBySectionId.bind(loader);
 
     // Routes
     var section = require('./routes/section');
@@ -28,6 +29,7 @@ module.exports = function (pool, quarter) {
     var search = require('./routes/search');
     var meetings = require('./routes/meetings');
     var final = require('./routes/final');
+    var instructors = require('./routes/instructors');
 
     // Expose API verbs
     app.get('/section/:ccode(\\d+)', section);
@@ -36,6 +38,7 @@ module.exports = function (pool, quarter) {
     app.get('/meetings/:section_id(\\d+)', meetingsLoader, meetings);
     app.get('/final/:section_id(\\d+)', finalLoader, final);
     app.get('/search/:query', search);
+    app.get('/instructors/:section_id', instructorsLoader, instructors);
 
     return app;
 }
