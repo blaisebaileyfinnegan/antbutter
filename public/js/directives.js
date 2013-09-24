@@ -1,189 +1,6 @@
-var app = angular.module('antbutter', [], function($interpolateProvider) {
-    $interpolateProvider.startSymbol('[[');
-    $interpolateProvider.endSymbol(']]');
-});
+var directives = angular.module('antbutter.directives', []);
 
-app.factory('quarterService', function ($http) {
-    var service = {};
-
-    var map = {
-        F: 'Fall',
-        W: 'Winter',
-        S: 'Spring',
-        Y: 'Summer Session I',
-        M: 'Summer 10wk',
-        Z: 'Summer Session II'
-    };
-
-    var mapQuarters = function (quarters) {
-        return quarters.map(function (element) {
-            var letter = element.quarter[0];
-            var name = map[letter];
-            var year = '20' + element.quarter.slice(1);
-
-            return {
-                quarter: element.quarter,
-                fullName: name + ' ' + year,
-                yearTerm: element.yearTerm
-            }
-        })
-    }
-
-    service.getQuarters = function() {
-        return $http.get('/quarters').then(function (result) {
-            return mapQuarters(result.data).reverse();
-        });
-    }
-
-    return service;
-});
-
-app.factory('timeService', function () {
-    var service = {};
-
-    service.convertMilitaryTimeToReadable = function(time, isEnd) {
-        time = time.slice(0, 5);
-
-        var hours = parseInt(time.slice(0, 2));
-        var minutes = parseInt(time.slice(3, 5));
-
-        var isPm;
-        if (hours >= 12) {
-            isPm = true;
-
-            if (hours >= 13)
-                hours -= 12;
-
-        } else {
-            isPm = false;
-        }
-
-        hours = hours.toString();
-        minutes = minutes.toString();
-
-        if (minutes.length == 1) {
-            minutes = '0' + minutes;
-        }
-
-        time = hours + ':' + minutes;
-
-        if (isEnd) {
-            time += (isPm ? 'pm' : 'am');
-        }
-
-        return time;
-    }
-
-    return service;
-});
-
-app.factory('searchService', function ($http) {
-    var service = {};
-
-    service.query = '';
-
-    var mapQuery = function (route) {
-        return function (query) {
-            return $http.get('/' + this.currentQuarter.quarter + '/' + route + '/' + query, { cache: true }).then(function(result) {
-                return result.data;
-            });
-        };
-    }
-
-    service.search = mapQuery('search');
-    service.sections = mapQuery('sections'); 
-    service.courses = mapQuery('courses');
-    service.meetings = mapQuery('meetings');
-    service.final = mapQuery('final');
-    service.instructors = mapQuery('instructors');
-
-    return service;
-});
-
-// Main query results
-app.factory('resultsService', function ($http) {
-    var service = {};
-
-    service.results = [];
-    service.query = undefined;
-    
-    return service;
-});
-
-app.factory('externalLinksService', function () {
-    var service = {};
-
-    service.getCourseWebsoc = function(yearTerm, short_name, number) {
-        return "http://websoc.reg.uci.edu/perl/WebSoc?YearTerm=" + yearTerm + "&Dept=" + encodeURIComponent(short_name) + "&CourseNum=" + number;
-    }
-
-    service.getInstructorEvaluations = function (name) {
-        return "https://eaterevals.eee.uci.edu/browse/instructor#" + encodeURIComponent(name.slice(0, -4));
-    }
-
-    service.getRateMyProfessor = function(name) {
-        return "http://ratemyprofessors.com/SelectTeacher.jsp?searchName=" + encodeURIComponent(name.slice(0, -4)) + "&search_submit1=Search&sid=1074#ratingTable";
-    }
-
-    return service
-});
-
-app.controller('SearchController', function ($scope, $timeout, searchService, quarterService, resultsService) {
-    $scope.quarters = quarterService.getQuarters().then(function(data) {
-        searchService.currentQuarter = data[0];
-        return data;
-    });
-
-    currentSearch = undefined;
-    $scope.search = function (query) {
-        $scope.$broadcast('teardown');
-
-        if (currentSearch) {
-            $timeout.cancel(currentSearch);
-        }
-
-        currentSearch = $timeout(function () {
-            query = query.trim();
-
-            if (query.length == 0) {
-                return;
-            }
-
-            searchService.query = query;
-            searchService.search(query).then(function(results) {
-                resultsService.results = results;
-                resultsService.quarter = searchService.currentQuarter;
-
-                var empty = true;
-                for (var key in resultsService.results) {
-                    if (resultsService.results[key].length > 0) {
-                        empty = false;
-
-                        break;
-                    }
-                }
-
-                if (empty) {
-                    $scope.$broadcast('empty');
-                } else {
-                    $scope.$broadcast('search');
-                }
-            });
-
-        }, 200);
-    }
-
-    $scope.changeQuarter = function (quarter) {
-       searchService.currentQuarter = quarter;
-       $scope.$broadcast('teardown');
-    }
-
-    $scope.currentQuarter = function () {
-        return searchService.currentQuarter;
-    }
-});
-
-app.directive('results', function (resultsService, searchService) {
+directives.directive('results', function (resultsService, searchService) {
     return {
         transclude: true,
         restrict: 'E',
@@ -233,7 +50,7 @@ app.directive('results', function (resultsService, searchService) {
     }
 });
 
-app.directive('category', function () {
+directives.directive('category', function () {
     return {
         transclude: true,
         restrict: 'E',
@@ -245,7 +62,7 @@ app.directive('category', function () {
             $scope.expand = false;
 
             $scope.$watch('collection', function() {
-                $scope.expand = $scope.collection && $scope.collection.length < 5;
+                $scope.expand = $scope.collection && $scope.collection.length < 10;
             });
         },
         template:
@@ -262,7 +79,7 @@ app.directive('category', function () {
     }
 });
 
-app.directive('department', function (searchService) {
+directives.directive('department', function (searchService) {
     return {
         transclude: false,
         restrict: 'E',
@@ -294,7 +111,7 @@ app.directive('department', function (searchService) {
     }
 });
 
-app.directive('instructor', function (searchService, resultsService, externalLinksService) {
+directives.directive('instructor', function (searchService, resultsService, externalLinksService) {
     return {
         transclude: false,
         restrict: 'E',
@@ -309,15 +126,17 @@ app.directive('instructor', function (searchService, resultsService, externalLin
                     '<div class="course-title">' +
                         '[[instructor.name]]' +
                     '</div>' +
-                    '<div class="websoc"><a href="[[evaluation]]" target="_blank">EaterEvals</a></div>' +
-                    '<div class="websoc"><a href="[[ratemyprofessor]]" target="_blank">Rate My Professor</a></div>' +
+                    '<div class="websoc">' +
+                        '<a href="[[evaluation]]" class="external-link" target="_blank">EaterEvals</a>' +
+                        '<a href="[[ratemyprofessor]]" class="external-link" target="_blank">Rate My Professor</a>' +
+                    '</div>' +
                     '<div class="clearer"><!-- --></div>' +
                 '</div>' +
             '</div>'
     }
 });
 
-app.directive('course', function (externalLinksService, searchService, resultsService) {
+directives.directive('course', function (externalLinksService, searchService, resultsService) {
     return {
         transclude: false,
         restrict: 'E',
@@ -386,7 +205,7 @@ app.directive('course', function (externalLinksService, searchService, resultsSe
     }
 });
 
-app.directive('section', function(externalLinksService, searchService, resultsService) {
+directives.directive('section', function(externalLinksService, searchService, resultsService) {
     return {
         transclude: false,
         restrict: 'C',
@@ -471,69 +290,4 @@ app.directive('section', function(externalLinksService, searchService, resultsSe
     }
 });
 
-app.filter('meeting', function(timeService) {
-    return function(input) {
-        if (!input || (input == 'TBA')) {
-            return 'TBA';
-        } else {
-            var time ='';
-            if (input.sunday) {
-                time += 'Su';
-            }
 
-            if (input.monday) {
-                time += 'M';
-            }
-
-            if (input.tuesday) {
-                time += 'Tu';
-            }
-
-            if (input.wednesday) {
-                time += 'W';
-            }
-
-            if (input.thursday) {
-                time += 'Th';
-            }
-
-            if (input.friday) {
-                time += 'F';
-            }
-
-            if (input.saturday) {
-                time += 'Sa';
-            }
-
-            time += ' ';
-
-            time +=
-                timeService.convertMilitaryTimeToReadable(input.start) + ' - ' +
-                timeService.convertMilitaryTimeToReadable(input.end, true) +
-                ' at ' + (input.place ? input.place : 'TBA');
-
-            return time;
-        }
-    }
-});
-
-app.filter('final', function(timeService) {
-    return function(input) {
-        if (!input || input.length == 0 || (input == 'TBA')) {
-            return 'TBA';
-        } else {
-            var time = '';
-            time +=
-            input.day + ', ' +
-            timeService.convertMilitaryTimeToReadable(input.start) + ' - ' +
-            timeService.convertMilitaryTimeToReadable(input.end, true);
-
-            return time;
-        }
-    }
-});
-
-app.filter('eatereval', function() {
-    return function(input) {
-    }
-});
