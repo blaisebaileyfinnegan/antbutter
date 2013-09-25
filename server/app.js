@@ -4,13 +4,6 @@ require('./environment');
 var express = require('express');
 var app = express();
 
-// Templating engine
-var swig = require('swig');
-app.engine('html', swig.renderFile);
-
-app.set('view engine', 'html');
-app.set('views', __dirname + '/views');
-
 // Set up database
 var mysql = require('mysql');
 
@@ -44,11 +37,9 @@ base.get('webSocProvider').getSearchableQuarters(function(err, quarters) {
     });
 
     // Route includes
-    var main = require('./routes/main');
     var quarters = require('./routes/quarters');
 
     // Verbs
-    app.get('/', main);
     app.get('/quarters', quarters);
 
     // Port
