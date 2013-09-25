@@ -39,10 +39,10 @@ services.factory('timeService', function () {
     var service = {};
 
     service.convertMilitaryTimeToReadable = function(time, isEnd) {
-        time = time.slice(0, 5);
+        var time = time.split(':');
 
-        var hours = parseInt(time.slice(0, 2));
-        var minutes = parseInt(time.slice(3, 5));
+        var hours = parseInt(time[0]);
+        var minutes = parseInt(time[1]);
 
         var isPm;
         if (hours >= 12) {

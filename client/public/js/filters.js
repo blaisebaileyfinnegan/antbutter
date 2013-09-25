@@ -1,4 +1,4 @@
-var filters = angular.module('antbutter.filters', []);
+var filters = angular.module('antbutter.filters', ['antbutter.services']);
 
 filters.filter('meeting', function(timeService) {
     return function(input) {
