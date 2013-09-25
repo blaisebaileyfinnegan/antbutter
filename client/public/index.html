@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html ng-app="antbutter">
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="An search solution to UCI's Schedule of Classes">
+        <meta name="author" content="Michael Vu">
+        <title>{% block title %}antbutter{% endblock %}</title>
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="/css/antbutter.css" />
+        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+        <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular.min.js"></script>
+        <script src="/js/app.js"></script>
+        <script src="/js/services.js"></script>
+        <script src="/js/controllers.js"></script>
+        <script src="/js/filters.js"></script>
+        <script src="/js/directives.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1 class="app-title"><span class="uci-blue">antbutter</span></h1>
+                <a href="http://www.reg.uci.edu/images/anteaters/" target="_blank">
+                    <img src="http://i.imgur.com/qXx7AbT.gif" class="anteater">
+                </a>
+                <div class="app-about">
+                    Instant search for anteaters
+                </div>
+                <div class="clearer"><!-- --></div>
+            </div>
+            <form ng-controller="SearchController">
+                <div class="input-group">
+                    <div class="input-group-btn">
+                        <div class="quarter-selection">
+                            <button type="button" ng-model="currentQuarter" class="btn btn-default dropdown-toggle" data-toggle="dropdown">[[currentQuarter().fullName]]&nbsp;&nbsp;<span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="quarter in quarters">
+                                <a href="#" ng-click="changeQuarter(quarter)">[[quarter.fullName]]</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="query">
+                            <input type="text" ng-model="query" ng-change="search(query)" name="query" class="form-control query" placeholder="Look up a department, course, course code, or instructor"></input>
+                        </div>
+                    </div><!-- /btn-group -->
+                </div>
+                <results>
+                </results>
+            </form>
+        </div>
+
+    </body>
+</html>
