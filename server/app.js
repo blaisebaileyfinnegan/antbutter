@@ -34,7 +34,7 @@ base.get('webSocProvider').getSearchableQuarters(function(err, quarters) {
         app.use(express.logger());
         app.use(express.bodyParser());
         app.use(app.router);
-        app.use(express.static(__dirname + "/public"));
+        app.use(express.static("./../client/public"));
 
         quarters.forEach(function(row) {
             // Create an API for each available quarter
