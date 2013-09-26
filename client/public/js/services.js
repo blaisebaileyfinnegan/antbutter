@@ -122,6 +122,14 @@ services.factory('externalLinksService', function () {
         return "http://ratemyprofessors.com/SelectTeacher.jsp?searchName=" + encodeURIComponent(name.slice(0, -4)) + "&search_submit1=Search&sid=1074#ratingTable";
     }
 
+    service.getMapLink = function(place) {
+        return "http://maps.google.com/?q=" + place.latitude + "," + place.longitude;
+    }
+
+    service.getMapImage = function(place) {
+        return "http://maps.googleapis.com/maps/api/staticmap?center=" + place.latitude + "," + place.longitude + "&zoom=17&visual_refresh=true&size=800x600&sensor=false&markers=" + encodeURIComponent("color:red|size:mid|" + place.latitude + "," + place.longitude);
+    }
+
     return service
 });
 

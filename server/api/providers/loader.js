@@ -74,6 +74,7 @@ Loader.prototype.loadQueryResult = function (req, res, next, query) {
                 callback(null, []);
             }
         }.bind(this),
+
         departments: function (callback) {
             if (!isLettersThanNumber && !isNumbers) {
                 // Department search
@@ -82,12 +83,20 @@ Loader.prototype.loadQueryResult = function (req, res, next, query) {
                 callback(null, []);
             }
         }.bind(this),
+
         /**
          * In addition to searching the course catalog, let's throw in some instructor searches
          */
         instructors: function (callback) {
             // Instructor search
             this.provider.findInstructorsByWildcard(query, taskComplete(callback));
+        }.bind(this),
+
+        /**
+         * Location searching
+         */
+        places: function (callback) {
+            this.provider.findPlacesByWildcard(query, taskComplete(callback));
         }.bind(this)
     },
     function (err, results) {
