@@ -7,11 +7,16 @@ directives.directive('results', function (resultsService, searchService) {
         controller: function ($scope, $element) {
             $scope.query = searchService.query;
             $scope.name = 'results';
-
-            $scope.$on('teardown', function (event) {
+            
+            var clear = function() {
                 $scope.departments = [];
                 $scope.courses = [];
                 $scope.instructors = [];
+                $scope.places = [];
+            }
+
+            $scope.$on('teardown', function (event) {
+                clear();
             });
 
             $scope.$on('search', function (event) {
@@ -20,14 +25,13 @@ directives.directive('results', function (resultsService, searchService) {
                 $scope.departments = resultsService.results.departments;
                 $scope.courses = resultsService.results.courses;
                 $scope.instructors = resultsService.results.instructors;
+                $scope.places = resultsService.results.places;
 
                 $scope.$broadcast('results');
             });
 
             $scope.$on('empty', function(event) {
-                $scope.departments = [];
-                $scope.courses = []
-                $scope.instructors = [];
+                clear();
                 $scope.showError = true;
             });
 
@@ -36,6 +40,9 @@ directives.directive('results', function (resultsService, searchService) {
             '<div class="results">' +
                 '<div ng-show="showError" class="results">No results were found for <span ng-bind="query"></span></div>' +
                 '<div class="list-group">' +
+                    '<category title="Places" use="places">' +
+                        '<place ng-repeat="place in places"></place>' +
+                    '</category>' +
                     '<category title="Departments" use="departments">' +
                         '<department ng-repeat="dept in departments"></department>' +
                     '</category>' +
@@ -78,6 +85,35 @@ directives.directive('category', function () {
             '</div>'
     }
 });
+
+directives.directive('place', function(externalLinksService) {
+    return {
+        transclude: false,
+        restrict: 'E',
+        controller: function ($scope, $element, $attrs) {
+            $scope.image = externalLinksService.getMapImage($scope.place);
+            $scope.link = externalLinksService.getMapLink($scope.place);
+            $scope.shouldExpand = false;
+
+            $scope.expand = function() {
+                $scope.shouldExpand = !$scope.shouldExpand;
+            }
+        },
+        template:
+            '<div class="list-group-item no-border">' +
+                '<div class="clickable dept-title" ng-click="expand()">' +
+                    '<h3 style="display: inline;" class="list-group-item-heading dept-heading">' +
+                        '[[place.name]]' +
+                    '</h3>' +
+                    '<div class="clearer"><!-- --></div>' +
+                '</div>' +
+                '<a href="[[link]]" target="_blank">' +
+                    '<img ng-src="[[image]]" ng-if="shouldExpand">' +
+                '</a>' +
+            '</div>'
+    }
+});
+
 
 directives.directive('department', function (searchService) {
     return {

@@ -204,3 +204,9 @@ tr:nth-child(even) {
 .external-link {
     margin-right: 12px;
 }
+
+.map-canvas {
+    margin-left:12px;
+    width: 480px;
+    height: 320px;
+}

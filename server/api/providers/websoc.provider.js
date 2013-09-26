@@ -81,6 +81,14 @@ WebSocProvider.prototype.findInstructorsByWildcard = function (term, callback) {
     this.retrieveAll(sql, [term], callback);
 }
 
+WebSocProvider.prototype.findPlacesByWildcard = function(term, callback) {
+    var sql = 'SELECT p.place_id, p.latitude, p.longitude, p.name, p.type FROM places as p WHERE LOWER(name) LIKE ? ORDER BY p.name ASC LIMIT 50';
+
+    term = "%" + term + "%";
+
+    this.retrieveAll(sql, [term], callback);
+};
+
 WebSocProvider.prototype.getFinalBySectionId = function (section_id, callback) {
     var sql = 'SELECT f.final_id, f.section_id, f.day, f.start, f.end FROM finals as f INNER JOIN sections as s ON s.section_id = f.section_id WHERE s.section_id = ?';
 
