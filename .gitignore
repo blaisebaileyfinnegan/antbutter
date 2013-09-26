@@ -9,7 +9,7 @@ lib-cov
 *.gz
 *.swp
 
-cfg/*
+server/cfg/*
 pids
 logs
 results
