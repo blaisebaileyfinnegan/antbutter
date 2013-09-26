@@ -41,6 +41,7 @@ div.container {
     position: relative;
     margin-bottom: 2px;
     color: #666;
+    padding-top: 8px;
 }
 
 .clearer {
@@ -209,4 +210,10 @@ tr:nth-child(even) {
     margin-left:12px;
     width: 480px;
     height: 320px;
+}
+
+.about-link {
+    position: absolute;
+    bottom: 0;
+    right: 205px;
 }
