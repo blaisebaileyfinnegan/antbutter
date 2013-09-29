@@ -4,12 +4,12 @@ antbutter
 An UCI instant search application, powered by a RESTful API. 
 Provides UCI courses, instructors, and building locations to the public. Everything is in Javascript.
 
-How to Install
---------------
+Installation
+-------------
 Coming soon...
 
-How it Works
-------------
+How does it work?
+-----------------
 The whole thing consists of a few scrapers feeding a database, a search API which accesses the database, and a client-side
 script which interfaces that API.
 
