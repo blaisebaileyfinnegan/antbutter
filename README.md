@@ -24,7 +24,7 @@ were not up to scale). So, the coordinates I got were useless, but the building 
 So in my determination to be as lazy as possible, I made another script to automate coordinate 
 retrieval Google's geocoding service. Afterwards, coordinates were verified and then inserted into my database.
 4. For each quarter that exists in the database, an API is mounted with the quarter as the base path (see below).
-5. A complete Angular front-end uses the routes exposed to 
+5. A complete Angular front-end uses API routes to perform all operations.
 
 Unit Tests
 ----------
