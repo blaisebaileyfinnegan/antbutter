@@ -49,5 +49,6 @@ Verbs
 - `GET /F13/meetings/:section_id`
 - `GET /F13/final/:section_id`
 - `GET /F13/section/:ccode`
+- `GET /F13/instructors/:section_id`
 
 **F13** can be substituted with the quarter of your choice
