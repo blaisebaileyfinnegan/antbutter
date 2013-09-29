@@ -20,7 +20,7 @@ map locations (coordinates, building information, etc.).
 After obtaining a list of building IDs and a route which describes what they do, I built another 
 [scraper](https://github.com/blaisebaileyfinnegan/ucimapscraper) which requests that same data from the backend.
 3. This actually ended up being more difficult since the official UCI map uses its own custom map type (the locations provided
-were not up to scale). However, the building names I got were all correct.
+were not up to scale). So, the coordinates I got were useless, but the building names I got were all correct.
 So in my determination to be as lazy as possible, I made another script to automate coordinate 
 retrieval Google's geocoding service. Afterwards, coordinates were verified and then inserted into my database.
 4. For each quarter that exists in the database, an API is mounted with the quarter as the base path (see below).
