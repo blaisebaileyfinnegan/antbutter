@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-require('./environment');
 var express = require('express');
 var app = express();
 
@@ -9,11 +8,6 @@ var mysql = require('mysql');
 
 var cfg = require('./cfg/dev_db');
 app.set('port', 3000);
-
-app.configure('production', function () {
-    cfg = require('./cfg/db');
-    app.set('port', 80);
-});
 
 var pool = mysql.createPool(cfg);
 

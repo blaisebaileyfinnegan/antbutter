@@ -57,6 +57,12 @@ WebSocProvider.prototype.buildDeptClause = function(terms) {
     return clauses.join(' AND ');
 }
 
+WebSocProvider.prototype.getCoursesByInstructorId = function (instructorId, callback) {
+    var sql = 'SELECT c.course_id, c.short_name, c.number, c.title FROM sections as s INNER JOIN sections2instructors as s2i ON s2i.section_id = s.section_id INNER JOIN instructors as i ON i.instructor_id = s2i.instructor_id INNER JOIN courses as c ON c.course_id = s.course_id WHERE i.instructor_id = ?';
+
+    this.retrieveAll(sql, [instructorId], callback);
+}
+
 WebSocProvider.prototype.findCoursesByWildcard = function (terms, callback) {
     var sql = 'SELECT d.dept_id, d.quarter, d.short_name, d.college_title, d.college_comment, d.dept_title, d.dept_comment, c.course_id, c.number, c.title, count(s.section_id) as section_count FROM courses as c INNER JOIN departments2courses as d2c ON d2c.course_id = c.course_id INNER JOIN departments as d ON d2c.dept_id = d.dept_id INNER JOIN sections as s ON s.course_id = c.course_id WHERE ' + this.buildDeptClause(terms[0]) + ' AND LOWER(c.number) LIKE ? AND d.quarter = ? GROUP BY c.course_id ORDER BY d.short_name ASC';
 
@@ -138,7 +144,6 @@ WebSocProvider.prototype.findDepartmentsByWildcard = function (terms, callback) 
     var sql = 'SELECT d.dept_id, d.quarter, d.short_name, d.college_title, d.college_comment, d.dept_title, d.dept_comment FROM departments as d WHERE ' + this.buildDeptClause(terms) + ' AND d.quarter = ?';
 
     terms = this.prepareTerms(terms);
-    
     this.retrieveAll(sql, terms.concat([this.termCode]), callback);
 }
 

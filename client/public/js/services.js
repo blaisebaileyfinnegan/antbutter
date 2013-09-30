@@ -88,22 +88,25 @@ services.factory('searchService', function ($http) {
     }
 
     service.search = mapQuery('search');
-    service.sections = mapQuery('sections'); 
+    service.sections = mapQuery('sections');
     service.courses = mapQuery('courses');
     service.meetings = mapQuery('meetings');
     service.final = mapQuery('final');
     service.instructors = mapQuery('instructors');
+    service.instructor = {};
+    service.instructor.courses =
+        mapQuery('instructor/courses').bind(service);
 
     return service;
 });
 
 // Main query results
-app.factory('resultsService', function ($http) {
+services.factory('resultsService', function () {
     var service = {};
 
     service.results = [];
-    service.query = undefined;
-    
+    service.query = null;
+
     return service;
 });
 

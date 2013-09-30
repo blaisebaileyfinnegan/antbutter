@@ -1,4 +1,3 @@
-
 describe('Services:', function() {
     var $httpBackend;
 
@@ -13,7 +12,7 @@ describe('Services:', function() {
         var service;
 
         beforeEach(function(){
-            inject(function(quarterService, _$httpBackend_) {
+            inject(function(quarterService) {
                 service = quarterService
             });
         });
@@ -70,7 +69,7 @@ describe('Services:', function() {
         beforeEach(inject(function(timeService) {
             service = timeService;
         }));
-        
+
         it('should exist', function() {
             expect(service).toBeDefined();
         });
@@ -96,13 +95,13 @@ describe('Services:', function() {
         it('should exist', function() {
             expect(service).toBeDefined();
         });
-        
+
         /**
          * Not much to describe here. The client merely retrieves the data.
          * This should be tested server-side, where the data gets fetched and organized
          */
 
-        it('should be able to search, get sections, courses, meetings, finals, or instructors, and nothing else',
+        it('should be able to search, get sections, courses, meetings, finals, instructors, or instructor courses and nothing else',
             function() {
                 expect(service.query).toBeDefined();
                 expect(service.search).toBeDefined();
@@ -111,9 +110,10 @@ describe('Services:', function() {
                 expect(service.meetings).toBeDefined();
                 expect(service.final).toBeDefined();
                 expect(service.instructors).toBeDefined();
+                expect(service.instructor.courses).toBeDefined();
 
                 var length = Object.keys(service).length;
-                expect(length).toBe(7);
+                expect(length).toBe(8);
         });
     });
 
@@ -142,6 +142,26 @@ describe('Services:', function() {
             it('should return a link to Rate My Professor', function() {
                 expect(service.getRateMyProfessor('Edinger, A.')).toEqual(
                     'http://ratemyprofessors.com/SelectTeacher.jsp?searchName=Edinger&search_submit1=Search&sid=1074#ratingTable');
+            });
+        });
+
+        describe('getMapLink', function() {
+            it('should return a link to google maps', function() {
+                var place = {
+                    latitude: 50,
+                    longitude: 50
+                };
+                expect(service.getMapLink(place)).toEqual('http://maps.google.com/?q=50,50');
+            });
+        });
+
+        describe('getMapImage', function() {
+            it('should return a static Google Maps image', function () {
+                var place = {
+                    latitude: 100,
+                    longitude: 50
+                };
+                expect(service.getMapImage(place)).toEqual('http://maps.googleapis.com/maps/api/staticmap?center=100,50&zoom=17&visual_refresh=true&size=800x600&sensor=false&markers=color%3Ared%7Csize%3Amid%7C100%2C50');
             });
         });
     });

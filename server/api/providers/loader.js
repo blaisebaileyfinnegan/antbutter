@@ -131,3 +131,7 @@ Loader.prototype.loadFinalBySectionId = function (req, res, next) {
 Loader.prototype.loadInstructorsBySectionId = function (req, res, next) {
     this.provider.getInstructorsBySectionId(req.params.section_id, this.onComplete(req, res, next, 'instructors'));
 }
+
+Loader.prototype.loadCoursesByInstructorId = function (req, res, next) {
+    this.provider.getCoursesByInstructorId(req.params.instructor_id, this.onComplete(req, res, next, 'courses'));
+}
