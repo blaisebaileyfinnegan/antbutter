@@ -7,7 +7,7 @@ directives.directive('results', function (resultsService, searchService) {
         controller: function ($scope, $element) {
             $scope.query = searchService.query;
             $scope.name = 'results';
-            
+
             var clear = function() {
                 $scope.departments = [];
                 $scope.courses = [];
@@ -152,13 +152,26 @@ directives.directive('instructor', function (searchService, resultsService, exte
         transclude: false,
         restrict: 'E',
         controller: function ($scope, $element, $attrs) {
+            $scope.instructor_courses = [];
             $scope.name = 'instructor';
+
             $scope.evaluation = externalLinksService.getInstructorEvaluations($scope.instructor.name);
             $scope.ratemyprofessor = externalLinksService.getRateMyProfessor($scope.instructor.name);
+            $scope.loadCourses = function (instructorId) {
+                if ($scope.instructor_courses.length == 0) {
+                    $scope.instructor_courses = searchService.instructor.courses(instructorId);
+                } else {
+                    $scope.instructor_courses = [];
+                }
+            }
+
+            $scope.$on('teardown', function (event) {
+                $scope.instructor_courses = [];
+            });
         },
         template:
             '<div class="list-group-item no-border">' +
-                '<div class="clickable">' +
+                '<div class="clickable" ng-click="loadCourses(instructor.instructor_id)">' +
                     '<div class="course-title">' +
                         '[[instructor.name]]' +
                     '</div>' +
@@ -168,6 +181,7 @@ directives.directive('instructor', function (searchService, resultsService, exte
                     '</div>' +
                     '<div class="clearer"><!-- --></div>' +
                 '</div>' +
+                '<course ng-repeat="course in instructor_courses"></course>' +
             '</div>'
     }
 });
@@ -180,7 +194,6 @@ directives.directive('course', function (externalLinksService, searchService, re
             $scope.name = 'course';
             $scope.course_sections = [];
 
-            $scope.isCcodeQuery = ($scope.$parent.name != 'department');
             $scope.show_dept_name = $scope.$parent.name == 'results';
 
             if (!$scope.course.short_name) {
@@ -211,7 +224,7 @@ directives.directive('course', function (externalLinksService, searchService, re
             '<div class="list-group-item no-border">' +
                 '<div class="clickable">' +
                     '<div class="course-title" ng-click="loadSections(course.course_id)">' +
-                        '<span><h4 class="inline-dept-name" ng-if="show_dept_name">[[course.short_name]]&nbsp;</h4><h4 style="font-weight: normal; display:inline">[[course.number]]</h4>&nbsp;&nbsp;&nbsp;[[course.title]] - <span class="section_count">[[course.section_count]] sections</span></span>' +
+                        '<span><h4 class="inline-dept-name" ng-if="show_dept_name">[[course.short_name]]&nbsp;</h4><h4 style="font-weight: normal; display:inline">[[course.number]]</h4>&nbsp;&nbsp;&nbsp;[[course.title]]<span class="section_count" ng-if="course.section_count"> - [[course.section_count]] sections</span></span>' +
                     '</div>' +
                     '<div class="websoc"><a href="[[course.websoc]]" target="_blank">View in Websoc</a></div>' +
                     '<div class="clearer"><!-- --></div>' +
@@ -237,7 +250,7 @@ directives.directive('course', function (externalLinksService, searchService, re
                         '<tr class="section" ng-repeat="section in course_sections"></tr>' +
                     '</tbody>' +
                 '</table>' +
-            '</div>' 
+            '</div>'
     }
 });
 
@@ -325,5 +338,3 @@ directives.directive('section', function(externalLinksService, searchService, re
             '</td>'
     }
 });
-
-

@@ -1,4 +1,4 @@
-var controllers = angular.module('antbutter.controllers', []);
+var controllers = angular.module('antbutter.controllers', ['antbutter.services']);
 
 controllers.controller('SearchController', function ($scope, $timeout, searchService, quarterService, resultsService) {
     $scope.quarters = quarterService.getQuarters().then(function(data) {
