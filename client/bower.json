@@ -1,0 +1,22 @@
+{
+  "name": "antbutter",
+  "version": "0.0.0",
+  "homepage": "https://github.com/blaisebaileyfinnegan/antbutter",
+  "authors": [
+    "Michael Vu <mvu1@uci.edu>"
+  ],
+  "main": "public/js/app.js",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-mocks": "1.2.0-rc.2",
+    "angular": "1.2.0-rc.2"
+  }
+}

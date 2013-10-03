@@ -1,0 +1,218 @@
+html {
+    overflow-y: scroll;
+}
+
+body {
+    padding: 15px 20px;
+}
+
+div.container {
+    max-width: 1400px;
+}
+
+.uci-yellow {
+    color: #ffde6c;
+}
+
+.uci-blue {
+    color: #024;
+}
+
+.app-title {
+    margin: 0;
+    font-size: 64px;
+    display: inline-block;
+    overflow:hidden;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin-bottom: 15px;
+}
+
+.app-about {
+    position: absolute;
+    bottom: 0;
+    margin-left: 3px;
+}
+
+
+.header {
+    position: relative;
+    margin-bottom: 2px;
+    color: #666;
+    padding-top: 8px;
+}
+
+.clearer {
+    clear: both;
+}
+
+.anteater {
+    width: 205px;
+    height: 131px;
+    float: right;
+    display: inline-block;
+}
+
+.list-group {
+    margin-bottom: 0;
+}
+
+div.results {
+    margin: 10px 0px;
+    overflow: hidden;
+}
+
+div.query {
+    overflow: hidden;
+}
+
+div.search-tips {
+    margin-top: 10px;
+    overflow: hidden;
+}
+
+div.quarter-selection {
+    float: left;
+    margin-right: 5px;
+    width: 150px;
+}
+
+div.sections {
+    padding-left: 25px;
+}
+
+.dropdown-toggle {
+    width: 100%;
+}
+
+div.dept-item-marker {
+    width: 15px;
+    height: 100%;
+    float: left;
+    position: absolute;
+    background: green;
+}
+
+.section_count {
+    font-size: 11px;
+}
+.list-group-item:last-child {
+    margin-bottom: -1px;
+}
+
+.lecture {
+    font-weight:bold;
+}
+
+.no-border {
+    border: none;
+}
+
+.inline-dept-name {
+    display: inline;
+}
+
+.clickable:hover {
+    background-color: #ffde6c;
+    cursor: pointer;
+}
+
+.list-group-item {
+    padding: 5px 15px;
+}
+
+.time {
+    min-width: 10em;
+}
+
+.table {
+    margin-bottom: 0;
+    font-size: 85%;
+}
+
+tr {
+    padding: 4px;
+}
+
+.table thead>tr>th, .table tbody>tr>th, .table tfoot>tr>th, .table thead>tr>td, .table tbody>tr>td, .table tfoot>tr>td {
+    padding: 4px;
+}
+
+.full {
+    color: #F00;
+}
+
+.newonly {
+    color: #F00;
+}
+
+.waitl {
+    color: #F00;
+}
+
+.open {
+    color: #080;
+}
+
+.websoc {
+    position: absolute;
+    right: 0;
+    margin-top: 3px;
+    margin-right: 20px;
+    display: inline-block;
+    font-size: 12px;
+}
+
+.course-title {
+    float: left;
+    display: inline-block;
+    width: 50%;
+    padding: 2px;
+}
+
+.dept-title {
+    padding: 4px;
+}
+
+tr:nth-child(even) {
+    background: #f4f4f4;
+}
+
+.instructor {
+    padding: 0;
+}
+
+.page-header {
+    margin-top: 4px;
+    margin-bottom: 2px;
+}
+
+.page-header h1 {
+    margin: 0;
+}
+
+.category {
+    display: inline;
+    margin-top: 8px;
+}
+
+.results_count {
+    margin-left: 12px;
+}
+
+.external-link {
+    margin-right: 12px;
+}
+
+.map-canvas {
+    margin-left:12px;
+    width: 480px;
+    height: 320px;
+}
+
+.about-link {
+    position: absolute;
+    bottom: 0;
+    right: 205px;
+}
