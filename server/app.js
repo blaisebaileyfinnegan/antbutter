@@ -5,10 +5,7 @@ var app = express();
 
 // Set up database
 var mysql = require('mysql');
-
-var cfg = require('./cfg/dev_db');
-app.set('port', 3000);
-
+var cfg = require('./cfg/db');
 var pool = mysql.createPool(cfg);
 
 // Setup basic search API to find available quarters
@@ -18,6 +15,7 @@ var base = api(pool);
 base.get('webSocProvider').getSearchableQuarters(function(err, quarters) {
     app.set('quarters', []);
     app.configure(function() {
+        app.set('port', 3000);
         app.use(express.logger());
         app.use(express.bodyParser());
         app.use(app.router);
@@ -28,6 +26,10 @@ base.get('webSocProvider').getSearchableQuarters(function(err, quarters) {
             app.get('quarters').push(row);
             app.use('/' + row.quarter, api(pool, row.quarter));
         });
+    });
+
+    app.configure('production', function() {
+        app.set('port', 82);
     });
 
     // Route includes
