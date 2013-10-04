@@ -58,7 +58,7 @@ WebSocProvider.prototype.buildDeptClause = function(terms) {
 }
 
 WebSocProvider.prototype.getCoursesByInstructorId = function (instructorId, callback) {
-    var sql = 'SELECT c.course_id, c.short_name, c.number, c.title FROM sections as s INNER JOIN sections2instructors as s2i ON s2i.section_id = s.section_id INNER JOIN instructors as i ON i.instructor_id = s2i.instructor_id INNER JOIN courses as c ON c.course_id = s.course_id WHERE i.instructor_id = ?';
+    var sql = 'SELECT c.course_id, c.short_name, c.number, c.title FROM sections as s INNER JOIN sections2instructors as s2i ON s2i.section_id = s.section_id INNER JOIN instructors as i ON i.instructor_id = s2i.instructor_id INNER JOIN courses as c ON c.course_id = s.course_id WHERE i.instructor_id = ? GROUP BY c.course_id';
 
     this.retrieveAll(sql, [instructorId], callback);
 }
