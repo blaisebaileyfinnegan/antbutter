@@ -29,7 +29,7 @@ base.get('webSocProvider').getSearchableQuarters(function(err, quarters) {
     });
 
     app.configure('production', function() {
-        app.set('port', 82);
+        app.set('port', 90);
     });
 
     // Route includes
