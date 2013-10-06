@@ -28,8 +28,9 @@ retrieval Google's geocoding service. Afterwards, coordinates were verified and 
 
 Unit Tests
 ----------
-Client-side services and filters are covered in Jasmine. These are run using Karma.
-[Zotscrape](https://github.com/blaisebaileyfinnegan/zotscrape) also has its own Mocha unit tests.
+Client-side services, filters, and controllers are tested using Jasmine, with Karma used as the testrunner.
+[Zotscrape](https://github.com/blaisebaileyfinnegan/zotscrape) has unit tests written under Mocha using the node
+assert module.
 
 Difficulties
 ------------
