@@ -216,3 +216,57 @@ tr:nth-child(even) {
     bottom: 0;
     right: 205px;
 }
+
+nav {
+    position: fixed;
+    z-index: 1030;
+    width: 100%;
+}
+
+.modal {
+    display: block;
+}
+
+div.input-group {
+    width: 100%;
+}
+
+.input-group > div {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.input-group > input {
+    width: 400px;
+}
+
+.input-group > div:not(:first-child) {
+    margin-top: 20px;
+}
+
+.modal-body input.ng-invalid.ng-dirty {
+    background-color: #fee;
+}
+
+.modal-body input.ng-valid.ng-dirty {
+    background-color: #efe;
+}
+
+.fade {
+  opacity: 0.3;
+  transition: opacity .25s ease-in-out;
+  -webkit-transition: opacity .25s ease-in-out;
+}
+
+.modal-error {
+    float: left;
+    color: #f00;
+}
+
+.login-info {
+    margin-left: 5px;
+}
+
+.text-me {
+}

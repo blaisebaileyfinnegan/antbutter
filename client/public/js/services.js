@@ -133,7 +133,59 @@ services.factory('externalLinksService', function () {
         return "http://maps.googleapis.com/maps/api/staticmap?center=" + place.latitude + "," + place.longitude + "&zoom=17&visual_refresh=true&size=800x600&sensor=false&markers=" + encodeURIComponent("color:red|size:mid|" + place.latitude + "," + place.longitude);
     }
 
-    return service
+    return service;
+});
+
+services.factory('authService', function($http) {
+    var service = {};
+
+    service.user = null;
+
+    service.logout = function() {
+        return $http.get('/auth/logout');
+    }
+
+    service.login = function(email, password) {
+        var data = {
+            email: email,
+            password: password
+        }
+
+        return $http.post('/auth/login', data).then(
+            function(result) {
+                service.user = result.data;
+                return result.data;
+            },
+            function(result) {
+                throw result.data;
+            }
+        );
+    }
+
+    service.status = function() {
+        return $http.get('/auth/status').then(function(result) {
+            if (result.data == 0) return false;
+            else return result.data;
+        });
+    }
+
+    service.register = function(email, password, firstname, lastname) {
+        var data = {
+            email: email,
+            password: password,
+            firstname: firstname,
+            lastname: lastname
+        }
+
+        return $http.post('/auth/register', data).then(
+            null,
+            function(result) {
+                throw result.data;
+            }
+        );
+    }
+
+    return service;
 });
 
 

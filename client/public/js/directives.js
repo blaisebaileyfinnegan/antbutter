@@ -265,6 +265,10 @@ directives.directive('section', function(externalLinksService, searchService, re
                 return undefined;
             });
 
+            if ($scope.section.status == 'full' || $scope.section.status == 'waitl') {
+                $scope.enableSms = true;
+            }
+
             $scope.finalLoaded = false;
             $scope.section.final = searchService.final($scope.section.section_id).catch(function (){
                 return undefined;
@@ -320,6 +324,9 @@ directives.directive('section', function(externalLinksService, searchService, re
                 '<div ng-if="!section.final">TBA</div>' +
             '<td>' +
                 '[[section.enrolled]]' +
+                '<div class="text-me" ng-if="enableSms">' +
+                    'Text me when it opens! (Coming soon)' +
+                '</div>' +
             '</td>' +
             '<td>' +
                 '[[section.max]]' +
@@ -337,4 +344,27 @@ directives.directive('section', function(externalLinksService, searchService, re
                 '<span ng-switch-when="newonly" class="newonly">[[section.status]]</span>' +
             '</td>'
     }
+});
+
+directives.directive('equals', function() {
+  return {
+    restrict: 'A',
+    require: '?ngModel',
+    link: function($scope, $elem, $attrs, ngModel) {
+      $scope.$watch($attrs.ngModel, function() {
+        validate();
+      });
+
+      $attrs.$observe('equals', function (val) {
+        validate();
+      });
+
+      var validate = function() {
+        var val1 = ngModel.$viewValue;
+        var val2 = $attrs.equals;
+
+        ngModel.$setValidity('equals', val1 === val2);
+      };
+    }
+  }
 });

@@ -1,0 +1,48 @@
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" ng-click="close()" aria-hidden="true">&times;</button>
+			<h1 class="modal-title">Antbutter Registration</h1>
+			<p>
+				Class you want is full?
+			</p>
+			<div>
+				Coming soon: Register to gain access to our SMS service, allowing you to be
+				notified as soon as a class opens up.
+			</div>
+		</div>
+		<div class="modal-body">
+			<form name="form" method="post">
+				<div class="input-group">
+					<div>
+						What's your e-mail?
+					</div>
+					<input ng-model="input.email" type="email" class="form-control" required>
+					<div>
+						Choose a password:
+					</div>
+					<input ng-model="input.password" type="password" ng-minlength="6" ng-maxlength="60" class="form-control" required>
+					<div>
+						Please verify your password:
+					</div>
+					<input ng-model="input.passwordConfirm" ng-minlength="6" ng-maxlength="60" type="password" equals="[[input.password]]" class="form-control" required>
+					<div>
+						First name:
+					</div>
+					<input ng-model="input.firstname" ng-maxlength="40" type="text" class="form-control" required>
+					<div>
+						Last name:
+					</div>
+					<input ng-model="input.lastname" ng-maxlength="40" type="text" class="form-control" required>
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<span class="modal-error">
+				[[ message ]]
+			</span>
+			<button type="button" class="btn btn-success" ng-click="register()" ng-disabled="form.$invalid">Register</button>
+			<button type="button" class="btn btn-danger" ng-click="close()">Close</button>
+		</div>
+	</div>
+</div>

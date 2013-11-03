@@ -20,7 +20,7 @@ Loader.prototype.onComplete = function (req, res, next, storage) {
 
             next();
         } else {
-            res.status(204);
+            res.status(404);
             res.end();
         }
     }

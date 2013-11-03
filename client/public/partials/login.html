@@ -1,0 +1,29 @@
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" ng-click="close()" aria-hidden="true">&times;</button>
+			<h1 class="modal-title">Antbutter Login</h1>
+		</div>
+		<div class="modal-body">
+			<form name="form" method="post">
+				<div class="input-group">
+					<div>
+						E-mail:
+					</div>
+					<input name="email" ng-model="input.email" type="email" class="form-control" required>
+					<div>
+						Password:
+					</div>
+					<input name="password" ng-model="input.password" type="password" ng-minlength="6" ng-maxlength="60" class="form-control" required>
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<span class="modal-error">
+				[[ message ]]
+			</span>
+			<button type="button" class="btn btn-success" ng-click="login()" ng-disabled="form.$invalid">Login</button>
+			<button type="button" class="btn btn-danger" ng-click="close()">Close</button>
+		</div>
+	</div>
+</div>
