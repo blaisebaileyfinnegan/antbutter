@@ -4,7 +4,8 @@
   "description": "A search solution to UCI websoc",
   "main": "index.js",
   "devDependencies": {
-    "karma": "*"
+    "karma": "*",
+    "bower": "*"
   },
   "scripts": {
     "test": "karma start client/test/karma.config.js --single-run --browsers Firefox"
