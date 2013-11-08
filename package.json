@@ -1,0 +1,21 @@
+{
+  "name": "antbutter",
+  "version": "0.0.0",
+  "description": "A search solution to UCI websoc",
+  "main": "index.js",
+  "devDependencies": {
+    "karma": "*"
+  },
+  "scripts": {
+    "test": "karma start --single-run --browsers Firefox"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blaisebaileyfinnegan/antbutter"
+  },
+  "author": "Michael Vu",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/blaisebaileyfinnegan/antbutter/issues"
+  }
+}
