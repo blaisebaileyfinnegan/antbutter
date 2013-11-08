@@ -1,9 +1,5 @@
 var connection = require('./../db/connection');
 
-var options = {
-    encoding: 'utf8'
-}
-
 exports.up = function(next){
   connection.query('CREATE TABLE users ( \
                       id INT NOT NULL AUTO_INCREMENT, \
