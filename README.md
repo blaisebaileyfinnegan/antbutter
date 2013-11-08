@@ -4,6 +4,8 @@ antbutter
 An UCI instant search application, powered by a RESTful API. 
 Provides UCI courses, instructors, and building locations to the public. Everything is in Javascript.
 
+[![Build Status](https://travis-ci.org/blaisebaileyfinnegan/antbutter.png?branch=master)](https://travis-ci.org/blaisebaileyfinnegan/antbutter)
+
 Installation
 -------------
 Coming soon...
